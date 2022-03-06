@@ -1,0 +1,50 @@
+{
+  "name": "webhook-relay-server",
+  "version": "0.0.1",
+  "description": "Receives payloads and then sends them to the subscribed clients.",
+  "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit && eslint \"{src,test}/**/*.ts\" --fix",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start:dev": "nodemon",
+    "start:prod": "node dist/index.js",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "http-terminator": "^3.0.4",
+    "ioredis": "^4.28.5",
+    "lightship": "^7.0.1",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/ioredis": "^4.28.8",
+    "@types/lodash": "^4.14.178",
+    "@types/morgan": "^1.9.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "node"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

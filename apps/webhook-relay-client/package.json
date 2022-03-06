@@ -1,0 +1,42 @@
+{
+  "name": "webhook-relay-client",
+  "version": "0.0.1",
+  "description": "Client to proxy webhooks to a specific target.",
+  "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit && eslint \"{src,test}/**/*.ts\" --fix",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start:dev": "nodemon",
+    "start:prod": "node dist/index.js",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "eventsource": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/eventsource": "^1.1.8"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "node"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-relay-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: webhook-relay-server-svc
+                port:
+                  number: 3000
+            path: /webhooks/
+            pathType: ImplementationSpecific
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-relay-server-svc
+spec:
+  ports:
+    - name: web
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: webhook-relay-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: webhook-relay-server
+spec:
+ selector:
+   matchLabels:
+     app: webhook-relay-server
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       app: webhook-relay-server
+   spec:
+     containers:
+       - name: webhook-relay-server
+         image: danielcf/webhook-relay-server:test3
+         imagePullPolicy: Never
+         ports:
+           - containerPort: 3000
+         readinessProbe:
+           httpGet:
+             path: /ready
+             port: 9000
+           failureThreshold: 1
+           initialDelaySeconds: 5
+           periodSeconds: 5
+           successThreshold: 1
+           timeoutSeconds: 5
+         livenessProbe:
+           httpGet:
+             path: /live
+             port: 9000
+           failureThreshold: 3
+           initialDelaySeconds: 10
+           # Allow sufficient amount of time (90 seconds = periodSeconds * failureThreshold)
+           # for the registered shutdown handlers to run to completion.
+           periodSeconds: 30
+           successThreshold: 1
+           # Setting a very low timeout value (e.g. 1 second) can cause false-positive
+           # checks and service interruption.
+           timeoutSeconds: 5
