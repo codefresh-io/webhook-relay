@@ -51,7 +51,7 @@ export class Client {
         this.on('message', this.handleMessageEvent.bind(this))
         this.on('open', this.handleConnectionOpenEvent.bind(this))
         this.on('error', this.handleConnectionErrorEvent.bind(this))
-        this.on('ping', () => {}) // no-op just to make sure serverHeartbeatTimer is being reset
+        this.on('heartbeat', () => {}) // no-op just to make sure serverHeartbeatTimer is being reset
 
         this.logger.info(`Forwarding ${this.sourceUrl} to ${this.targetBaseUrl}`)
 

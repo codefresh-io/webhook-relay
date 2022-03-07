@@ -14,7 +14,7 @@ export class AppController {
 
     async subscribeClientToChannel(req: Request, res: Response): Promise<void> {
         const { channel } = req.params
-        const keepAliveInterval = new Interval(res.pushPingEvent, this.options.heartbeatIntervalSecs * 1000)
+        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, this.options.heartbeatIntervalSecs * 1000)
         const send = (eventData: Record<string, any>): void => {
             res.pushEvent(eventData)
             keepAliveInterval.reset()
@@ -25,7 +25,7 @@ export class AppController {
             this.logger.info('Client disconnected', channel, this.eventbus.subscribersCount(channel))
         }
 
-        // Start keepAliveInterval to ping the Client every few seconds to keep the connection alive
+        // Start keepAliveInterval to send heartbeats to the Client every few seconds to keep the connection alive
         keepAliveInterval.start()
 
         // Listen for events on this channel

@@ -20,8 +20,8 @@ export function sse(req: Request, res: Response, next: NextFunction): void {
         messageCount++
     }
 
-    res.pushPingEvent = (): void => {
-        res.pushEvent({}, 'ping')
+    res.pushHeartbeatEvent = (): void => {
+        res.pushEvent({}, 'heartbeat')
     }
 
     res.pushReadyEvent = (): void => {
