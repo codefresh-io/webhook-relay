@@ -16,6 +16,7 @@ export class Server {
     private readonly server: http.Server
     private readonly terminator: HttpTerminator
     private readonly port: number
+    private readonly logger: LoggerService
 
     constructor(
         { port, heartbeatIntervalSecs }: ServerConfig,
@@ -31,8 +32,8 @@ export class Server {
 
         app.get('/webhooks/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
 
-        // Don't log keep-alive requests
-        app.use(morgan('tiny'))
+        // Don't log keep-alive (SSE) requests
+        app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))
 
         app.post('/webhooks/:channel/*', use(controller.publishEventOnChannel.bind(controller)))
 
@@ -41,6 +42,7 @@ export class Server {
         this.server = http.createServer(app)
         this.terminator = createHttpTerminator({ server: this.server })
         this.port = port
+        this.logger = logger
     }
 
     start(
@@ -57,5 +59,7 @@ export class Server {
         await this.terminator.terminate()
         // Wait for all active requests to finish
         await delay(2 * 1000)
+
+        this.logger.info('Server closed.')
     }
 }
