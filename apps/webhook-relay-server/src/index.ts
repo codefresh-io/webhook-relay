@@ -8,9 +8,21 @@ import { registerUncaughtErrorsHandler } from './utils'
 async function main(): Promise<void> {
     const logger = console
     const healthService = await createLightship(config.healthService)
-    const eventbus = new EventBus(config.eventbus)
+    const eventbus = new EventBus(config.eventbus, logger)
     const server = new Server(config.server, eventbus, logger)
 
+    await eventbus.start(
+        (isFirstTime: boolean) => {
+            if (!isFirstTime) {
+                healthService.signalReady()
+            }
+            logger.info(`EventBus is ready`)
+        },
+        () => {
+            healthService.signalNotReady()
+            logger.warn(`EventBus is not ready`)
+        }
+    )
     server.start(
         () => {
             healthService.signalReady()
