@@ -13,7 +13,7 @@ export const config: Config = {
             autoReconnectStrategy: {
                 reconnectBackoff: {
                     factor: Number(process.env.REDIS_RECONNECT_BACKOFF_FACTOR || 1),
-                    initialTimeout: Number(process.env.REDIS_RECONNECT_BACKOFF_MIN_TIMEOUT || 1000),
+                    initialTimeout: Number(process.env.REDIS_RECONNECT_BACKOFF_INITIAL_TIMEOUT || 1000),
                     maxTimeout: Number(process.env.REDIS_RECONNECT_BACKOFF_MAX_TIMEOUT || Number.POSITIVE_INFINITY),
                     randomize: process.env.REDIS_RECONNECT_BACKOFF_RANDOMIZE === 'true',
                 },

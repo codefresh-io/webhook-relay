@@ -34,6 +34,9 @@ export class EventBus {
         // Subscribe to EventBus ready events (emitted when all Redis connections are ready)
         this.subscribeEventBusReadyEvent(onReady)
 
+        // Subscribe to EventBus not ready events (emitted when any of the Redis connections are not ready)
+        this.subscribeEventBusNotReadyEvent(onNotReady)
+
         // If Redis isn't enabled, don't try to connect and publish EventBus ready event immediately
         if (!this.config.redis.url) {
             this.publishEventBusReadyEvent()
@@ -42,7 +45,7 @@ export class EventBus {
 
         // Connect to Redis
         this.isRedisEnabled = true
-        await this.initRedis(onNotReady)
+        await this.initRedis()
     }
 
     /**
@@ -97,11 +100,10 @@ export class EventBus {
 
     /**
      * Initialise all Redis connections
-     * @param {Function} onNotReady - callback that is called when the EventBus is marked as not ready
      * @private
      */
-    private async initRedis(onNotReady: () => void): Promise<void> {
-        const options: IORedis.RedisOptions = this.getRedisClientOptions(onNotReady)
+    private async initRedis(): Promise<void> {
+        const options: IORedis.RedisOptions = this.getRedisClientOptions()
 
         // Need two Redis clients; one cannot subscribe and publish.
         this.initRedisPublisher(options)
@@ -151,10 +153,9 @@ export class EventBus {
 
     /**
      * Gets Redis client options which are required to initialise Redis
-     * @param {Function} onNotReady - callback that is called when the EventBus is marked as not ready
      * @private
      */
-    private getRedisClientOptions(onNotReady: () => void): IORedis.RedisOptions {
+    private getRedisClientOptions(): IORedis.RedisOptions {
         const { autoReconnectStrategy, requestRetryStrategy, enableOfflineQueue } = this.config.redis
         const backoffDelayCalculator = createBackoffTimeoutCalculator(autoReconnectStrategy.reconnectBackoff)
         return {
@@ -163,14 +164,15 @@ export class EventBus {
             // retryStrategy is a function that will be called when the connection is lost.
             // When reconnected, the client will auto subscribe to everything that the previous connection was subscribed to.
             // If the previous connection has some unfulfilled commands, the client will resend them when reconnected.
-            retryStrategy(reconnectAttemptsCount: number): number | null {
+            retryStrategy: (reconnectAttemptsCount: number): number | null => {
                 if (reconnectAttemptsCount === autoReconnectStrategy.maxReconnectAttempts) {
-                    onNotReady()
+                    this.publishEventBusNotReadyEvent()
+                    this.logger.error('Reached max reconnect attempts limit, giving up on Redis connection...')
                     return null // stop retrying
                 }
 
                 if (reconnectAttemptsCount === autoReconnectStrategy.maxReconnectAttemptsBeforeReadinessFailure) {
-                    onNotReady()
+                    this.publishEventBusNotReadyEvent()
                     // continue retrying
                 }
 
@@ -234,5 +236,24 @@ export class EventBus {
             // Subscribe to all future EventBus ready events
             this.emitter.on('ready', () => onReady(false))
         })
+    }
+
+    /**
+     * Publish EventBus 'notReady' event
+     * NOTE: if Redis enabled, this event will be published if any of the Redis connections are not ready
+     * @private
+     */
+    private publishEventBusNotReadyEvent(): void {
+        this.publishLocalEvent('notReady', {})
+    }
+
+    /**
+     * Subscribe to EventBus 'ready' event
+     * NOTE: if Redis enabled, this event will be published if any of the Redis connections are not ready
+     * @param {Function} onNotReady - callback that is called when the EventBus is marked as not ready
+     * @private
+     */
+    private subscribeEventBusNotReadyEvent(onNotReady: () => void): void {
+        this.subscribe('notReady', onNotReady)
     }
 }
