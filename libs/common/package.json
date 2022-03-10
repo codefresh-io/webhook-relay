@@ -1,5 +1,5 @@
 {
-  "name": "@codefresh-io/logger",
+  "name": "@codefresh-io/common",
   "version": "1.0.0",
   "main": "dist/index.js",
   "files": [
@@ -17,9 +17,7 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "winston": "^3.6.0",
-    "@codefresh-io/common": "1.0.0",
-    "@types/node": "^17.0.19"
+    "@types/node": "^17.0.21"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

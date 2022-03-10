@@ -1,3 +1,8 @@
+export function registerUncaughtErrorsHandler(handler: (...args: any[]) => void): void {
+    process.on('unhandledRejection', handler)
+    process.on('uncaughtException', handler)
+}
+
 export function registerShutdownHandler(
     gracefulShutdown: ((...args: any[]) => void) | ((...args: any[]) => Promise<void>),
     gracefulShutdownTimeout = 5 * 1000,

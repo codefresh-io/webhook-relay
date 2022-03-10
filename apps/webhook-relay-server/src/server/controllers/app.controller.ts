@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { LoggerService } from '@codefresh-io/logger'
+import { Interval } from '@codefresh-io/common'
 
-import { Interval } from '../../utils'
 import { EventBus } from '../../eventbus'
 import { HttpStatus } from '../types'
 
@@ -22,7 +22,7 @@ export class AppController {
         const close = (): void => {
             this.eventbus.unsubscribe(channel, send)
             keepAliveInterval.stop()
-            this.logger.info('Client disconnected', channel, this.eventbus.subscribersCount(channel))
+            this.logger.info(`Client disconnected from channel "${channel}" with ${this.eventbus.subscribersCount(channel)} subscribers.`)
         }
 
         // Start keepAliveInterval to send heartbeats to the Client every few seconds to keep the connection alive
@@ -37,7 +37,7 @@ export class AppController {
         // Let the Client know that the server is ready to send events
         res.pushReadyEvent()
 
-        this.logger.info('Client connected to sse', channel, this.eventbus.subscribersCount(channel))
+        this.logger.info(`Client connected to SSE on channel "${channel}" with ${this.eventbus.subscribersCount(channel)} subscribers.`)
     }
 
     async publishEventOnChannel(req: Request, res: Response): Promise<void> {
