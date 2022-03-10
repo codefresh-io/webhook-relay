@@ -1,10 +1,10 @@
 import { createLightship } from 'lightship'
 import { Logger } from '@codefresh-io/logger'
+import { registerUncaughtErrorsHandler } from '@codefresh-io/common'
 
 import { Server } from './server'
 import { config } from './config'
 import { EventBus } from './eventbus'
-import { registerUncaughtErrorsHandler } from './utils'
 
 async function main(): Promise<void> {
     const logger = new Logger()

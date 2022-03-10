@@ -1,16 +1,12 @@
 import winston from 'winston'
 import { SPLAT } from 'triple-beam'
 
-import { LoggerService, LogLevel, LogTransport } from './types'
+import { LoggerService, LogTransport } from './types'
 import { LoggerConfig } from './config'
 
 const DEFAULT_LABEL = 'default'
 
-export function createLoggerClass({
-    level = LogLevel.DEBUG,
-    transportKinds = [ LogTransport.CONSOLE ],
-    appName = 'App',
-}: LoggerConfig): new (label?: string) => LoggerService {
+export function createLoggerClass({ level, transports, appName }: LoggerConfig): new (label?: string) => LoggerService {
     const supportedTransports: Record<LogTransport, winston.transport> = {
         [LogTransport.CONSOLE]: new winston.transports.Console({
             format: winston.format.colorize({ all: true }),
@@ -37,7 +33,7 @@ export function createLoggerClass({
 
             this.logger = winston.loggers.add(label, {
                 level,
-                transports: transportKinds.map(kind => supportedTransports[kind]),
+                transports: transports.map(transport => supportedTransports[transport]),
                 format: winston.format.combine(
                     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
                     winston.format.errors({ stack: true }),

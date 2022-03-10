@@ -1,8 +1,8 @@
 import { Logger } from '@codefresh-io/logger'
+import { registerShutdownHandler, registerUncaughtErrorsHandler } from '@codefresh-io/common'
 
 import { Client } from './client'
 import { config } from './config'
-import { registerShutdownHandler, registerUncaughtErrorsHandler } from './utils'
 
 function main(): void {
     const logger = new Logger()
