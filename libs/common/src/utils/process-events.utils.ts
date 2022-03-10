@@ -9,7 +9,7 @@ export function registerShutdownHandler(
     signals = [ 'SIGINT', 'SIGTERM', 'SIGHUP' ],
 ): void {
     const handler = async (...args: any[]): Promise<void> => {
-        setTimeout(() => process.exit(1), gracefulShutdownTimeout)
+        setTimeout(() => process.exit(1), gracefulShutdownTimeout).unref()
         await gracefulShutdown(...args)
     }
     signals.forEach(signal => {
