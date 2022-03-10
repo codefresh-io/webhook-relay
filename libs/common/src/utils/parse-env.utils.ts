@@ -1,25 +1,25 @@
-export function parseList<DefaultValueType = Array<string>>(
+export function parseList<DefaultValue = Array<string>>(
     value: string | undefined,
-    defaultValue: DefaultValueType
-): Array<string> | DefaultValueType {
+    defaultValue: DefaultValue
+): Array<string> | DefaultValue {
     if (!value) return defaultValue
 
     return value.split(',')
 }
 
-export function parseBoolean<DefaultValueType = boolean>(
+export function parseBoolean<DefaultValue = boolean>(
     value: string | undefined,
-    defaultValue: DefaultValueType
-): boolean | DefaultValueType {
+    defaultValue: DefaultValue
+): boolean | DefaultValue {
     if (!value) return defaultValue
 
     return ([ '1', 'true' ].includes(value))
 }
 
-export function parseNumber<DefaultValueType = number>(
+export function parseNumber<DefaultValue = number>(
     value: string | undefined,
-    defaultValue: DefaultValueType
-): number | DefaultValueType {
+    defaultValue: DefaultValue
+): number | DefaultValue {
     if (!value) return defaultValue
 
     return Number.parseFloat(value)
