@@ -15,9 +15,12 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "e2e": "lerna run e2e",
-    "lint": "lerna run lint"
+    "lint": "lerna run lint",
+    "list-deps-mismacthes": "syncpack list-mismatches",
+    "fix-deps-mismacthes": "syncpack fix-mismatches"
   },
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "syncpack": "^6.2.0"
   }
 }
