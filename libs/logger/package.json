@@ -1,0 +1,22 @@
+{
+  "name": "@codefresh-io/logger",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "files": [
+    "dist/**/*",
+    "*.md"
+  ],
+  "scripts": {
+    "start:dev": "tsc -w",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit && eslint \"**/*.ts\" --fix",
+    "prepare": "npm run build",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "winston": "^3.6.0"
+  }
+}

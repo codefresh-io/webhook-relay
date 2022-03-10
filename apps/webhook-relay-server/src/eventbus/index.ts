@@ -1,9 +1,9 @@
 import { noop } from 'lodash'
 import IORedis, { Redis } from 'ioredis'
+import { LoggerService } from '@codefresh-io/logger'
 
 import EventEmitter from 'events'
 import { EventBusConfig } from '../config'
-import { LoggerService } from '../types'
 import { createBackoffTimeoutCalculator } from '../utils'
 
 // The namespace to which all Redis clients of all server instances will publish and subscribe.

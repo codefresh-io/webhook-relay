@@ -34,7 +34,9 @@ export const config: Config = {
     },
     healthService: {
         port: Number(process.env.HEALTH_SERVICE_PORT || 9000),
-        detectKubernetes: process.env.HEALTH_SERVICE_DETECT_KUBERNETES === 'true',
+        detectKubernetes: process.env.HEALTH_SERVICE_DETECT_KUBERNETES ?
+            process.env.HEALTH_SERVICE_DETECT_KUBERNETES === 'true' :
+            true,
         shutdownDelay: Number(process.env.HEALTH_SERVICE_SHUTDOWN_DELAY || 5 * 1000),
         shutdownHandlerTimeout: Number(process.env.HEALTH_SERVICE_SHUTDOWN_HANDLER_TIMEOUT || 10 * 1000),
     },
