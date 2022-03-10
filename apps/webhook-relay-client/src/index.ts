@@ -1,9 +1,11 @@
+import { Logger } from '@codefresh-io/logger'
+
 import { Client } from './client'
 import { config } from './config'
 import { registerShutdownHandler, registerUncaughtErrorsHandler } from './utils'
 
 function main(): void {
-    const logger = console
+    const logger = new Logger()
     const client = new Client(config.client, logger)
 
     client.start()

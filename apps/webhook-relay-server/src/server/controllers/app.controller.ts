@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
+import { LoggerService } from '@codefresh-io/logger'
 
 import { Interval } from '../../utils'
 import { EventBus } from '../../eventbus'
 import { HttpStatus } from '../types'
-import { LoggerService } from '../../types'
 
 export class AppController {
     constructor(

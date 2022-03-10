@@ -1,4 +1,5 @@
 import { createLightship } from 'lightship'
+import { Logger } from '@codefresh-io/logger'
 
 import { Server } from './server'
 import { config } from './config'
@@ -6,7 +7,7 @@ import { EventBus } from './eventbus'
 import { registerUncaughtErrorsHandler } from './utils'
 
 async function main(): Promise<void> {
-    const logger = console
+    const logger = new Logger()
     const healthService = await createLightship(config.healthService)
     const eventbus = new EventBus(config.eventbus, logger)
     const server = new Server(config.server, eventbus, logger)

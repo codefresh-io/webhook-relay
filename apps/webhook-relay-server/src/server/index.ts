@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
 import { createHttpTerminator, HttpTerminator } from 'http-terminator'
+import { LoggerService } from '@codefresh-io/logger'
 
 import http from 'http'
 import { setTimeout as delay } from 'timers/promises'
@@ -9,7 +10,6 @@ import { use } from './utils'
 import { errorHandler, sse } from './middlewares'
 import { AppController } from './controllers'
 import { EventBus } from '../eventbus'
-import { LoggerService } from '../types'
 import { ServerConfig } from '../config'
 
 export class Server {

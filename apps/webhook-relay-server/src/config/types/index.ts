@@ -1,4 +1,4 @@
-import { ExponentialBackoffOptions } from '../utils'
+import { ExponentialBackoffOptions } from '../../utils'
 
 export interface AutoReconnectStrategy {
     // Exponential backoff options that are used for reconnecting to Redis when the connection is lost.

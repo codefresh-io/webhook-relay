@@ -1,7 +1,7 @@
 import EventSource from 'eventsource'
 import axios from 'axios'
+import { LoggerService } from '@codefresh-io/logger'
 
-import { LoggerService } from '../types'
 import { ClientConfig } from '../config'
 import { Timer } from '../utils'
 import { isValidUrl } from './utils'
