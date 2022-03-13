@@ -3,6 +3,7 @@ import axios from 'axios'
 import { LoggerService } from '@codefresh-io/logger'
 import { Timer } from '@codefresh-io/common'
 
+import { join } from 'path'
 import { ClientConfig } from '../config'
 import { isValidUrl } from './utils'
 
@@ -83,7 +84,9 @@ export class Client {
 
     private async handleMessageEvent(msg: MessageEvent<any>): Promise<void> {
         const data = JSON.parse(msg.data)
-        const target = new URL(data.path, this.targetBaseUrl)
+        const target = new URL(this.targetBaseUrl)
+        target.pathname = join(target.pathname, data.path)
+        target.search = new URLSearchParams(data.query).toString()
 
         try {
             const res = await axios.post(target.toString(), data.body, {

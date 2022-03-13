@@ -44,9 +44,10 @@ export class AppController {
         const { channel } = req.params
         const payload = {
             headers: req.headers,
-            path: req.originalUrl,
-            body: req.body,
+            originalUrl: req.originalUrl,
+            path: req.path,
             query: req.query,
+            body: req.body,
             timestamp: Date.now(),
         }
         await this.eventbus.publish(channel, payload)
