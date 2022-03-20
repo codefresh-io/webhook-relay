@@ -9,8 +9,6 @@ services:
     ports:
       - "3000:3000"
       - "9000:9000"
-    links:
-      - redis
     environment:
       - "REDIS_URL=redis://redis:6379"
     depends_on:
@@ -21,12 +19,24 @@ services:
       dockerfile: apps/webhook-relay-client/Dockerfile
       args:
         - "APP=webhook-relay-client"
-    links:
-      - server
     environment:
       - "SOURCE_URL=http://server:3000/webhooks/test/"
-      - "TARGET_BASE_URL=https://jsonplaceholder.typicode.com/todos/1/"
+      - "TARGET_BASE_URL=http://integration-tests:3001"
     depends_on:
       - server
+  integration-tests:
+    build:
+      context: .
+      dockerfile: apps/integration-tests/Dockerfile
+      args:
+        - "APP=e2e"
+    environment:
+      - "WEBHOOK_RELAY_SERVER_BASE_URL=http://server:3000"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - server
+      - client
+      - redis
   redis:
     image: redis

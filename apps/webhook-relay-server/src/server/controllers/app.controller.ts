@@ -9,12 +9,12 @@ export class AppController {
     constructor(
         private eventbus: EventBus,
         private logger: LoggerService,
-        private options: { heartbeatIntervalSecs: number }
+        private options: { heartbeatInterval: number }
     ) {}
 
     async subscribeClientToChannel(req: Request, res: Response): Promise<void> {
         const { channel } = req.params
-        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, this.options.heartbeatIntervalSecs * 1000)
+        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, this.options.heartbeatInterval)
         const send = (eventData: Record<string, any>): void => {
             res.pushEvent(eventData)
             keepAliveInterval.reset()
@@ -25,7 +25,7 @@ export class AppController {
             this.logger.info(`Client disconnected from channel "${channel}" with ${this.eventbus.subscribersCount(channel)} subscribers.`)
         }
 
-        // Start keepAliveInterval to send heartbeats to the Client every few seconds to keep the connection alive
+        // Start keepAliveInterval to send heartbeats to the Client every few milliseconds to keep the connection alive
         keepAliveInterval.start()
 
         // Listen for events on this channel
@@ -47,7 +47,7 @@ export class AppController {
             originalUrl: req.originalUrl,
             path: req.path,
             query: req.query,
-            body: req.body,
+            body: req.body.toString(),
             timestamp: Date.now(),
         }
         await this.eventbus.publish(channel, payload)

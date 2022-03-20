@@ -19,16 +19,17 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, heartbeatIntervalSecs }: ServerConfig,
+        { port, heartbeatInterval }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
-        const controller = new AppController(eventbus, logger, { heartbeatIntervalSecs })
+        const controller = new AppController(eventbus, logger, { heartbeatInterval })
         const app = express()
 
         app.use(cors())
-        app.use(express.json())
-        app.use(express.urlencoded({ extended: true }))
+        app.use(express.raw({ type: ['application/json', 'application/x-www-form-urlencoded']}))
+        // app.use(express.json())
+        // app.use(express.urlencoded({ extended: true }))
 
         app.get('/webhooks/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
 

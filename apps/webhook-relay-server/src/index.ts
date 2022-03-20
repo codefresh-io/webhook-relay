@@ -36,7 +36,7 @@ async function main(): Promise<void> {
     )
 
     healthService.registerShutdownHandler(async () => {
-        // Wait for a few seconds (`shutdownDelay` property), and then
+        // Wait for a few milliseconds (`shutdownDelay` property), and then
         logger.info('Starting graceful shutdown...')
         // Stop accepting new connections, close all keep-alive connections and
         // wait for all active requests to finish
