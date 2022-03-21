@@ -19,19 +19,3 @@ export function verifyGithubPayload(secret: string): Handler {
     return next()
   }
 }
-
-// export function verifyGithubPayload2(secret: string): Handler {
-//   return function (req: Request, res: Response, next: NextFunction): void {
-//     if (!req.body) {
-//       return next('Request body empty')
-//     }
-//     const data = JSON.stringify(req.body)
-//     const sig = Buffer.from(req.get(sigHeaderName) || '', 'utf8')
-//     const hmac = crypto.createHmac(sigHashAlg, secret)
-//     const digest = Buffer.from(`${sigHashAlg}=${hmac.update(data).digest('hex')}`, 'utf8')
-//     if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
-//       return next(`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`)
-//     }
-//     return next()
-//   }
-// }
