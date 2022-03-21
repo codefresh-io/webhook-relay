@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: apps/webhook-relay-server/Dockerfile
+      args:
+        - "APP=webhook-relay-server"
+    ports:
+      - "3000:3000"
+      - "9000:9000"
+    environment:
+      - "REDIS_URL=redis://redis:6379"
+    depends_on:
+      - redis
+  client:
+    build:
+      context: .
+      dockerfile: apps/webhook-relay-client/Dockerfile
+      args:
+        - "APP=webhook-relay-client"
+    environment:
+      - "SOURCE_URL=http://server:3000/webhooks/channel-name/"
+      - "TARGET_BASE_URL=http://url-of-target"
+    depends_on:
+      - server
+  redis:
+    image: redis

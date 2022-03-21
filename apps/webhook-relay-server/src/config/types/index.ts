@@ -70,7 +70,7 @@ export interface ServerConfig {
     port: number
 
     // Delay in milliseconds between each heartbeat that the server will send to the clients
-    heartbeatIntervalSecs: number
+    heartbeatInterval: number
 }
 
 export interface Config {

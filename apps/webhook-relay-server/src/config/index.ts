@@ -7,7 +7,7 @@ export * from './types'
 export const config: Config = {
     server: {
         port: parseNumber(process.env.PORT, 3000),
-        heartbeatIntervalSecs: parseNumber(process.env.SERVER_HEARTBEAT_INTERVAL_SECS, 5),
+        heartbeatInterval: parseNumber(process.env.SERVER_HEARTBEAT_INTERVAL, 5 * 1000),
     },
     eventbus: {
         redis: {
@@ -15,7 +15,7 @@ export const config: Config = {
             autoReconnectStrategy: {
                 reconnectBackoff: {
                     factor: parseNumber(process.env.REDIS_RECONNECT_BACKOFF_FACTOR, 1),
-                    initialTimeout: parseNumber(process.env.REDIS_RECONNECT_BACKOFF_INITIAL_TIMEOUT, 1000),
+                    initialTimeout: parseNumber(process.env.REDIS_RECONNECT_BACKOFF_INITIAL_TIMEOUT, 1 * 1000),
                     maxTimeout: parseNumber(process.env.REDIS_RECONNECT_BACKOFF_MAX_TIMEOUT, Number.POSITIVE_INFINITY),
                     randomize: parseBoolean(process.env.REDIS_RECONNECT_BACKOFF_RANDOMIZE, false),
                 },
