@@ -5,7 +5,10 @@
   "description": "Integration tests service for Webhook Relay",
   "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
   "workspaces": {
-    "nohoist": ["@types", "@types/**"]
+    "nohoist": [
+      "@types",
+      "@types/**"
+    ]
   },
   "scripts": {
     "prebuild": "rimraf dist",

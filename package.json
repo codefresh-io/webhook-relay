@@ -18,7 +18,7 @@
     "e2e": "lerna run e2e",
     "lint": "lerna run lint && npm run list-deps-mismacthes",
     "list-deps-mismacthes": "syncpack list-mismatches || echo 'Please run \"yarn fix-deps-mismacthes\" to fix this error, or create \"versionGroups\": https://www.npmjs.com/package/syncpack#versiongroups.'",
-    "fix-deps-mismacthes": "syncpack fix-mismatches"
+    "fix-deps-mismacthes": "syncpack fix-mismatches && yarn install"
   },
   "devDependencies": {
     "lerna": "^4.0.0",
