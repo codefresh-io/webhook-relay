@@ -1,0 +1,6 @@
+webhook-relay-client:
+  image:
+    repository: quay.io/codefresh/webhook-relay-client
+webhook-relay-server:
+  image:
+    repository: quay.io/codefresh/webhook-relay-server
