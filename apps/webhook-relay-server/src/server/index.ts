@@ -27,9 +27,12 @@ export class Server {
         const app = express()
 
         app.use(cors())
-        app.use(express.raw({ type: ['application/json', 'application/x-www-form-urlencoded']}))
-        // app.use(express.json())
-        // app.use(express.urlencoded({ extended: true }))
+        app.use(express.raw({
+            type: [
+                'application/json',
+                'application/x-www-form-urlencoded',
+            ],
+        }))
 
         app.get('/webhooks/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
 

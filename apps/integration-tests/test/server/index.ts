@@ -39,9 +39,8 @@ export class TestServer {
         app.use(rootRouter)
 
         app.use((err, req, res, next) => {
-            console.log('here err')
-            done(err)
             next(err)
+            done(err)
         })
 
         return app

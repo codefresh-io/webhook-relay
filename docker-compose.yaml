@@ -20,23 +20,9 @@ services:
       args:
         - "APP=webhook-relay-client"
     environment:
-      - "SOURCE_URL=http://server:3000/webhooks/test/"
-      - "TARGET_BASE_URL=http://integration-tests:3001"
+      - "SOURCE_URL=http://server:3000/webhooks/channel-name/"
+      - "TARGET_BASE_URL=http://url-of-target"
     depends_on:
       - server
-  integration-tests:
-    build:
-      context: .
-      dockerfile: apps/integration-tests/Dockerfile
-      args:
-        - "APP=e2e"
-    environment:
-      - "WEBHOOK_RELAY_SERVER_BASE_URL=http://server:3000"
-    ports:
-      - "3001:3001"
-    depends_on:
-      - server
-      - client
-      - redis
   redis:
     image: redis

@@ -47,7 +47,7 @@ export class AppController {
             originalUrl: req.originalUrl,
             path: req.path,
             query: req.query,
-            body: req.body.toString(),
+            body: req.body.toString(), // body is raw buffer and needs to be stringified
             timestamp: Date.now(),
         }
         await this.eventbus.publish(channel, payload)

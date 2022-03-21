@@ -1,6 +1,7 @@
 {
   "name": "webhook-relay-server",
   "version": "0.0.1",
+  "private": true,
   "description": "Receives payloads and then sends them to the subscribed clients.",
   "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
   "scripts": {

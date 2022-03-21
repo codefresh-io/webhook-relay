@@ -89,13 +89,7 @@ export class Client {
         target.search = new URLSearchParams(data.query).toString()
 
         try {
-            const res = await axios.post(target.toString(), data.body, {
-                headers: {
-                    ...data.headers,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    // 'content-length': `${Buffer.byteLength(JSON.stringify(data.body))}`,
-                },
-            })
+            const res = await axios.post(target.toString(), data.body, { headers: data.headers })
             this.logger.info(`${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`)
         } catch (err) {
             this.logger.error(`Failed to proxy request to ${target}`, err)
