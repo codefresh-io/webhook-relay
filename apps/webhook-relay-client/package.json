@@ -1,12 +1,13 @@
 {
   "name": "webhook-relay-client",
   "version": "0.0.1",
+  "private": true,
   "description": "Client to proxy webhooks to a specific target.",
   "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "lint": "tsc --noEmit && eslint \"{src,test}/**/*.ts\" --fix",
+    "lint": "tsc --noEmit && eslint \"{src,tests}/**/*.ts\" --fix",
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "nodemon",
     "start:prod": "node dist/index.js",
@@ -16,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "eventsource": "^1.1.0",
+    "eventsource": "^2.0.0",
     "@codefresh-io/logger": "1.0.0",
     "@codefresh-io/common": "1.0.0"
   },

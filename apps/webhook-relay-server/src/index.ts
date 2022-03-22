@@ -4,12 +4,12 @@ import { registerUncaughtErrorsHandler } from '@codefresh-io/common'
 
 import { Server } from './server'
 import { config } from './config'
-import { EventBus } from './eventbus'
+import { createEventBus } from './eventbus'
 
 async function main(): Promise<void> {
     const logger = new Logger()
     const healthService = await createLightship(config.healthService)
-    const eventbus = new EventBus(config.eventbus, logger)
+    const eventbus = createEventBus(config.eventbus)
     const server = new Server(config.server, eventbus, logger)
 
     await eventbus.start(
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
     )
 
     healthService.registerShutdownHandler(async () => {
-        // Wait for a few seconds (`shutdownDelay` property), and then
+        // Wait for a few milliseconds (`shutdownDelay` property), and then
         logger.info('Starting graceful shutdown...')
         // Stop accepting new connections, close all keep-alive connections and
         // wait for all active requests to finish

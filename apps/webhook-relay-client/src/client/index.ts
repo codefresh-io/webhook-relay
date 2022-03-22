@@ -12,11 +12,11 @@ export class Client {
     private readonly targetBaseUrl: string
     private readonly logger: LoggerService
     private readonly serverHeartbeatTimer: Timer
-    private readonly reconnectIntervalSecs: number
+    private readonly reconnectInterval: number
     private events: EventSource
 
     constructor(
-        { sourceUrl, targetBaseUrl, serverHeartbeatTimeoutSecs, reconnectIntervalSecs }: ClientConfig,
+        { sourceUrl, targetBaseUrl, serverHeartbeatTimeout, reconnectInterval }: ClientConfig,
         logger: LoggerService
     ) {
         if (!isValidUrl(sourceUrl)) {
@@ -27,13 +27,13 @@ export class Client {
             throw new Error(`The provided target URL is invalid: ${targetBaseUrl}`)
         }
 
-        if (reconnectIntervalSecs >= serverHeartbeatTimeoutSecs) {
-            throw new Error(`serverHeartbeatTimeoutSecs (${serverHeartbeatTimeoutSecs}) must be larger than reconnectIntervalSecs (${reconnectIntervalSecs})`)
+        if (serverHeartbeatTimeout <= reconnectInterval) {
+            throw new Error(`serverHeartbeatTimeout (${serverHeartbeatTimeout}) must be larger than reconnectInterval (${reconnectInterval})`)
         }
 
         this.sourceUrl = sourceUrl
         this.targetBaseUrl = targetBaseUrl
-        this.reconnectIntervalSecs = reconnectIntervalSecs
+        this.reconnectInterval = reconnectInterval
         this.logger = logger
 
         // serverHeartbeatTimer handler will try to recover the connection to the server in case no message
@@ -41,7 +41,7 @@ export class Client {
         this.serverHeartbeatTimer = new Timer(() => {
             this.logger.warn('Client did not receive an heartbeat from the server, trying to recover the connection...')
             this.recover()
-        }, serverHeartbeatTimeoutSecs * 1000)
+        }, serverHeartbeatTimeout)
     }
 
     start(): void {
@@ -72,7 +72,7 @@ export class Client {
 
     private setReconnectInterval(): void {
         // This isn't a valid property of type EventSource
-        (this.events as any).reconnectInterval = this.reconnectIntervalSecs * 1000
+        (this.events as any).reconnectInterval = this.reconnectInterval
     }
 
     private on(eventType: string, handler: (event: MessageEvent<any>) => void): void {
@@ -87,15 +87,10 @@ export class Client {
         const target = new URL(this.targetBaseUrl)
         target.pathname = join(target.pathname, data.path)
         target.search = new URLSearchParams(data.query).toString()
+        delete data.headers.host
 
         try {
-            const res = await axios.post(target.toString(), data.body, {
-                headers: {
-                    ...data.headers,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    'content-length': `${Buffer.byteLength(JSON.stringify(data.body))}`,
-                },
-            })
+            const res = await axios.post(target.toString(), data.body, { headers: data.headers })
             this.logger.info(`${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`)
         } catch (err) {
             this.logger.error(`Failed to proxy request to ${target}`, err)

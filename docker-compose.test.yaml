@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  client:
+    # override client env vars
+    environment:
+      - "SOURCE_URL=http://server:3000/subscribe/test/"
+      - "TARGET_BASE_URL=http://integration-tests:3001"
+  integration-tests:
+    build:
+      context: .
+      dockerfile: apps/integration-tests/Dockerfile
+      args:
+        - "APP=integration-tests"
+    environment:
+      - "WEBHOOK_RELAY_SERVER_BASE_URL=http://server:3000"
+      - "WEBHOOK_RELAY_CHANNEL=test"
+      - "TEST_SERVER_PORT=3001"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - server
+      - client
+      - redis
+    volumes:
+      - ./scripts/wait-for.sh:/scripts/wait-for.sh
+    command: sh -c '/scripts/wait-for.sh server:3000 -- yarn test'

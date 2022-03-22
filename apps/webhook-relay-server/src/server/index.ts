@@ -19,18 +19,22 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, heartbeatIntervalSecs }: ServerConfig,
+        { port, heartbeatInterval = 5 * 1000 }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
-        const controller = new AppController(eventbus, logger, { heartbeatIntervalSecs })
+        const controller = new AppController(eventbus, logger, { heartbeatInterval })
         const app = express()
 
         app.use(cors())
-        app.use(express.json())
-        app.use(express.urlencoded({ extended: true }))
+        app.use(express.raw({
+            type: [
+                'application/json',
+                'application/x-www-form-urlencoded',
+            ],
+        }))
 
-        app.get('/webhooks/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
+        app.get('/subscribe/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
 
         // Don't log keep-alive (SSE) requests
         app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))
