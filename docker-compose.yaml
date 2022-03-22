@@ -20,7 +20,7 @@ services:
       args:
         - "APP=webhook-relay-client"
     environment:
-      - "SOURCE_URL=http://server:3000/webhooks/channel-name/"
+      - "SOURCE_URL=http://server:3000/subscribe/channel-name/"
       - "TARGET_BASE_URL=http://url-of-target"
     depends_on:
       - server

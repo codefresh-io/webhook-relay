@@ -38,7 +38,7 @@ export interface RedisConfig {
     // If enabled, when a command can't be processed by Redis (being sent before the ready event),
     // it's added to the offline queue and will be executed when it can be processed.
     // Default true
-    enableOfflineQueue: boolean
+    enableOfflineQueue: boolean // TODO: enableReadyEvent if enableOfflineQueue is false?
 }
 
 export interface EventBusConfig {
@@ -70,7 +70,7 @@ export interface ServerConfig {
     port: number
 
     // Delay in milliseconds between each heartbeat that the server will send to the clients
-    heartbeatInterval: number
+    heartbeatInterval?: number
 }
 
 export interface Config {

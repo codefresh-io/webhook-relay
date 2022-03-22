@@ -20,11 +20,11 @@ describe('Integration Tests', function () {
     describe('POST /webhooks/:channel', function () {
         let testServer: TestServer
 
-        beforeEach(() => {
+        beforeEach(function () {
             testServer = new TestServer(config.testServerPort)
         })
 
-        afterEach(async () => {
+        afterEach(async function () {
             await testServer.close()
         })
 

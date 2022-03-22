@@ -3,7 +3,7 @@ services:
   client:
     # override client env vars
     environment:
-      - "SOURCE_URL=http://server:3000/webhooks/test/"
+      - "SOURCE_URL=http://server:3000/subscribe/test/"
       - "TARGET_BASE_URL=http://integration-tests:3001"
   integration-tests:
     build:

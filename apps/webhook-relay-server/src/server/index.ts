@@ -19,7 +19,7 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, heartbeatInterval }: ServerConfig,
+        { port, heartbeatInterval = 5 * 1000 }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
@@ -34,7 +34,7 @@ export class Server {
             ],
         }))
 
-        app.get('/webhooks/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
+        app.get('/subscribe/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
 
         // Don't log keep-alive (SSE) requests
         app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))
