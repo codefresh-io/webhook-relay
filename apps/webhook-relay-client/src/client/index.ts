@@ -87,6 +87,7 @@ export class Client {
         const target = new URL(this.targetBaseUrl)
         target.pathname = join(target.pathname, data.path)
         target.search = new URLSearchParams(data.query).toString()
+        delete data.headers.host
 
         try {
             const res = await axios.post(target.toString(), data.body, { headers: data.headers })
