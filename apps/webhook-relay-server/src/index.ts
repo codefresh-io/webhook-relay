@@ -4,12 +4,12 @@ import { registerUncaughtErrorsHandler } from '@codefresh-io/common'
 
 import { Server } from './server'
 import { config } from './config'
-import { EventBus } from './eventbus'
+import { createEventBus } from './eventbus'
 
 async function main(): Promise<void> {
     const logger = new Logger()
     const healthService = await createLightship(config.healthService)
-    const eventbus = new EventBus(config.eventbus, logger)
+    const eventbus = createEventBus(config.eventbus)
     const server = new Server(config.server, eventbus, logger)
 
     await eventbus.start(

@@ -4,16 +4,10 @@
   "private": true,
   "description": "Integration tests service for Webhook Relay",
   "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
-  "workspaces": {
-    "nohoist": [
-      "@types",
-      "@types/**"
-    ]
-  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "lint": "tsc --noEmit && eslint \"{src,test}/**/*.ts\" --fix",
+    "lint": "tsc --noEmit && eslint \"{src,tests}/**/*.ts\" --fix",
     "start:dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
@@ -52,7 +46,7 @@
       "ts",
       "node"
     ],
-    "rootDir": "test",
+    "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
