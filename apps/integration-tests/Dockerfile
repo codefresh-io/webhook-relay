@@ -43,4 +43,4 @@ COPY --from=build /code/node_modules /code/node_modules
 COPY --from=build /code/apps/${APP} /code/apps/${APP}
 
 WORKDIR /code/apps/${APP}
-CMD [ "yarn", "test" ]
+CMD [ "yarn", "start" ]

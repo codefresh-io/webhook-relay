@@ -23,4 +23,4 @@ services:
       - redis
     volumes:
       - ./scripts/wait-for.sh:/scripts/wait-for.sh
-    command: sh -c '/scripts/wait-for.sh server:3000 -- yarn test'
+    command: sh -c '/scripts/wait-for.sh server:3000 -- yarn start'
