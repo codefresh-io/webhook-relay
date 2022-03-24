@@ -7,22 +7,16 @@ export interface AutoReconnectStrategy {
     reconnectBackoff: ExponentialBackoffOptions
 
     // Maximum number of reconnection attempts when the connection to Redis is lost.
-    // Default: unlimited.
-    // NOTE: Regardless of the value set in `maxReconnectAttemptsBeforeReadinessFailure`, readiness prob will
-    // start failing after this limit is exceeded
-    maxReconnectAttempts: number | null
-
-    // Maximum number of Redis reconnection attempts before readiness prob of the server starts to fail.
-    // Default: 20.
-    // NOTE: This option gives the ability to fail the readiness prob after some grace period but still allow Redis
-    // to keep trying to reconnect according to the `maxReconnectAttempts` that is configured.
-    maxReconnectAttemptsBeforeReadinessFailure: number | null
+    // After this limit is exceeded, the connection will be lost "forever" and liveness probe will start to fail.
+    // Set to -1 for unlimited.
+    // Default: 20
+    maxReconnectAttempts: number
 }
 
 export interface RequestRetryStrategy {
     // Maximum number of retry attempts for a pending Redis command before it gets flushed with an error.
-    // Default: unlimited
-    maxRetriesPerRequest: number | null
+    // Default: -1 (unlimited)
+    maxRetriesPerRequest: number
 }
 
 export interface RedisConfig {
@@ -35,10 +29,18 @@ export interface RedisConfig {
     // Redis request retry strategy when Redis request (publish, subscribe, etc.) fails
     requestRetryStrategy: RequestRetryStrategy
 
-    // If enabled, when a command can't be processed by Redis (being sent before the ready event),
+    // If enabled, when a command can't be processed by Redis (being sent before the EventBus ready event),
     // it's added to the offline queue and will be executed when it can be processed.
     // Default: true
-    enableOfflineQueue: boolean // TODO: enableReadyEvent if enableOfflineQueue is false?
+    enableOfflineQueue: boolean
+
+    // If enabled, the EventBus will emit ready event when the Redis server reports that it is ready to receive commands (e.g. finish loading data from disk).
+    // Otherwise, ready will be emitted immediately right after the Redis connect event.
+    // NOTE: When a connection is established to Redis, the Redis server might still be loading the database from disk.
+    // While loading, the Redis server does not respond to any commands. To work around this, when this option is true,
+    // the ready event will be emitted only when the Redis server is able to process commands and its status is changed to ready.
+    // Default: true
+    enableReadyCheck: boolean
 }
 
 export interface EventBusConfig {

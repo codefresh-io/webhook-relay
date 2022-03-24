@@ -20,13 +20,13 @@ export const config: Config = {
                     maxTimeout: parseNumber(process.env.REDIS_RECONNECT_BACKOFF_MAX_TIMEOUT, Number.POSITIVE_INFINITY),
                     randomize: parseBoolean(process.env.REDIS_RECONNECT_BACKOFF_RANDOMIZE, false),
                 },
-                maxReconnectAttempts: parseNumber(process.env.REDIS_MAX_RECONNECT_ATTEMPTS, null), // null => unlimited
-                maxReconnectAttemptsBeforeReadinessFailure: parseNumber(process.env.REDIS_MAX_RECONNECT_ATTEMPTS_BEFORE_READINESS_FAIL, 20),
+                maxReconnectAttempts: parseNumber(process.env.REDIS_MAX_RECONNECT_ATTEMPTS, 20),
             },
             requestRetryStrategy: {
-                maxRetriesPerRequest: parseNumber(process.env.REDIS_MAX_RETRIES_PER_REQUEST, null), // null => unlimited
+                maxRetriesPerRequest: parseNumber(process.env.REDIS_MAX_RETRIES_PER_REQUEST, -1), // -1 => unlimited
             },
             enableOfflineQueue: parseBoolean(process.env.REDIS_ENABLE_OFFLINE_QUEUE, true),
+            enableReadyCheck: parseBoolean(process.env.REDIS_ENABLE_READY_CHECK, true),
         },
     },
     healthService: {
