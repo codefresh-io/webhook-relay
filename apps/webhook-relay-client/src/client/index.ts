@@ -54,7 +54,7 @@ export class Client {
         this.on('error', this.handleConnectionErrorEvent.bind(this))
         this.on('heartbeat', () => {}) // no-op just to make sure serverHeartbeatTimer is being reset
 
-        this.logger.info(`Forwarding ${this.sourceUrl} to ${this.targetBaseUrl}`)
+        this.logger.info(`Subscribing to ${this.sourceUrl}  ...`)
 
         this.serverHeartbeatTimer.start()
     }
@@ -90,7 +90,7 @@ export class Client {
         delete data.headers.host
 
         try {
-            const res = await axios.post(target.toString(), data.body, { headers: data.headers })
+            const res = await axios.post(target.toString(), data.body, { headers: data.headers, timeout: 10 * 1000 })
             this.logger.info(`${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`)
         } catch (err) {
             this.logger.error(`Failed to proxy request to ${target}`, err)
@@ -98,7 +98,7 @@ export class Client {
     }
 
     private handleConnectionOpenEvent(): void {
-        this.logger.info('Connected:', this.events.url)
+        this.logger.info(`Connected: ${this.events.url} . Forwarding to ${this.targetBaseUrl}`)
     }
 
     private handleConnectionErrorEvent(err: MessageEvent<any>): void {

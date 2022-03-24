@@ -6,8 +6,9 @@ export * from './types'
 
 export const config: Config = {
     server: {
-        port: parseNumber(process.env.PORT, 3000),
+        port: parseNumber(process.env.SERVER_PORT, 3000),
         heartbeatInterval: parseNumber(process.env.SERVER_HEARTBEAT_INTERVAL, 5 * 1000),
+        maxPayloadSizeLimit: process.env.SERVER_MAX_PAYLOAD_SIZE_LIMIT || '1mb',
     },
     eventbus: {
         redis: {

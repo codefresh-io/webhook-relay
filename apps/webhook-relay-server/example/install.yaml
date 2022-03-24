@@ -49,13 +49,15 @@ spec:
    spec:
      containers:
        - name: webhook-relay-server
-         image: quay.io/danisoi/webhook-relay-server:test1
+         image: quay.io/danisoi/webhook-relay-server:test2
 #         imagePullPolicy: Never
          ports:
            - containerPort: 3000
          env:
            - name: REDIS_URL
              value: redis://redis-master:6379
+           - name: SERVER_MAX_PAYLOAD_LIMIT
+             value: 3mb
          readinessProbe:
            httpGet:
              path: /ready

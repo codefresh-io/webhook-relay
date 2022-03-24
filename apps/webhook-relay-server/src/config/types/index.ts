@@ -37,7 +37,7 @@ export interface RedisConfig {
 
     // If enabled, when a command can't be processed by Redis (being sent before the ready event),
     // it's added to the offline queue and will be executed when it can be processed.
-    // Default true
+    // Default: true
     enableOfflineQueue: boolean // TODO: enableReadyEvent if enableOfflineQueue is false?
 }
 
@@ -48,28 +48,36 @@ export interface EventBusConfig {
 
 export interface HealthServiceConfig {
     // Health service port.
-    // Default 9000
+    // Default: 9000
     port: number
 
     // Start health service only if K8s env is detected.
-    // Default false
+    // Default: false
     detectKubernetes: boolean
 
     // Delays the shutdown handler by X milliseconds.
     // This value should match `readinessProbe.periodSeconds`.
-    // Default 5000
+    // Default: 5000
     shutdownDelay: number
 
     // Time in milliseconds before forceful termination if shutdown handlers do not complete.
-    // Default 10,000
+    // Default: 10,000
     shutdownHandlerTimeout: number
 }
 
 export interface ServerConfig {
     // Server port
+    // Default: 3000
     port: number
 
-    // Delay in milliseconds between each heartbeat that the server will send to the clients
+    // Controls the maximum request body size.
+    // If this is a number, then the value specifies the number of bytes;
+    // If it is a string (e.g. '100kb', '5mb'), the value will be parsed.
+    // Default: '1mb'
+    maxPayloadSizeLimit: number | string
+
+    // Delay in milliseconds between each heartbeat that the server will send to the clients.
+    // Default: 5000
     heartbeatInterval?: number
 }
 
