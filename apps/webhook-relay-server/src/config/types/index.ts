@@ -74,7 +74,7 @@ export interface ServerConfig {
     // If this is a number, then the value specifies the number of bytes;
     // If it is a string (e.g. '100kb', '5mb'), the value will be parsed.
     // Default: '1mb'
-    maxPayloadSizeLimit: number | string
+    maxPayloadSizeLimit?: number | string
 
     // Delay in milliseconds between each heartbeat that the server will send to the clients.
     // Default: 5000
