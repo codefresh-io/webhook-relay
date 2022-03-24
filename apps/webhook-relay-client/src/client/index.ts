@@ -90,7 +90,7 @@ export class Client {
         delete data.headers.host
 
         try {
-            const res = await axios.post(target.toString(), data.body, { headers: data.headers, timeout: 10 * 1000 })
+            const res = await axios.post(target.toString(), data.body, { headers: data.headers, timeout: 30 * 1000 })
             this.logger.info(`${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`)
         } catch (err) {
             this.logger.error(`Failed to proxy request to ${target}`, err)
