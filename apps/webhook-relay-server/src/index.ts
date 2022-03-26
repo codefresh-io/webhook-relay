@@ -9,7 +9,7 @@ import { createEventBus } from './eventbus'
 async function main(): Promise<void> {
     const logger = new Logger()
     const healthService = await createLightship(config.healthService)
-    const eventbus = createEventBus(config.eventbus)
+    const eventbus = createEventBus(config.eventbus, logger)
     const server = new Server(config.server, eventbus, logger)
 
     await eventbus.start(
@@ -20,8 +20,8 @@ async function main(): Promise<void> {
             logger.info(`EventBus is ready`)
         },
         () => {
-            healthService.signalNotReady()
-            logger.warn(`EventBus is not ready`)
+            logger.error(`EventBus is not ready`)
+            healthService.shutdown()
         }
     )
     server.start(

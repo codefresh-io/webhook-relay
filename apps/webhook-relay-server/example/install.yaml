@@ -11,15 +11,15 @@ spec:
                 name: webhook-relay-server-svc
                 port:
                   number: 3000
-            path: /subscribe/
-            pathType: ImplementationSpecific
+            path: /subscribe
+            pathType: Prefix
           - backend:
               service:
                 name: webhook-relay-server-svc
                 port:
                   number: 3000
-            path: /webhooks/
-            pathType: ImplementationSpecific
+            path: /webhooks
+            pathType: Prefix
 ---
 apiVersion: v1
 kind: Service
@@ -49,7 +49,7 @@ spec:
    spec:
      containers:
        - name: webhook-relay-server
-         image: quay.io/danisoi/webhook-relay-server:test1
+         image: quay.io/danisoi/webhook-relay-server:test5
 #         imagePullPolicy: Never
          ports:
            - containerPort: 3000

@@ -19,7 +19,7 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, heartbeatInterval = 5 * 1000 }: ServerConfig,
+        { port, maxPayloadSizeLimit, heartbeatInterval = 5 * 1000 }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
@@ -32,6 +32,7 @@ export class Server {
                 'application/json',
                 'application/x-www-form-urlencoded',
             ],
+            limit: maxPayloadSizeLimit,
         }))
 
         app.get('/subscribe/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))

@@ -121,24 +121,21 @@ export class RedisEventBus extends BaseEventBus {
      * @private
      */
     private getRedisClientOptions(): IORedis.RedisOptions {
-        const { autoReconnectStrategy, requestRetryStrategy, enableOfflineQueue } = this.config.redis
+        const { autoReconnectStrategy, requestRetryStrategy, enableOfflineQueue, enableReadyCheck } = this.config.redis
         const backoffDelayCalculator = createBackoffTimeoutCalculator(autoReconnectStrategy.reconnectBackoff)
         return {
             enableOfflineQueue,
-            maxRetriesPerRequest: requestRetryStrategy.maxRetriesPerRequest,
+            enableReadyCheck,
+            maxRetriesPerRequest: requestRetryStrategy.maxRetriesPerRequest === -1 ? null : requestRetryStrategy.maxRetriesPerRequest,
             // retryStrategy is a function that will be called when the connection is lost.
             // When reconnected, the client will auto subscribe to everything that the previous connection was subscribed to.
             // If the previous connection has some unfulfilled commands, the client will resend them when reconnected.
             retryStrategy: (reconnectAttemptsCount: number): number | null => {
-                if (reconnectAttemptsCount === autoReconnectStrategy.maxReconnectAttempts) {
-                    this.publishEventBusNotReadyEvent()
+                if (autoReconnectStrategy.maxReconnectAttempts !== -1 &&
+                    autoReconnectStrategy.maxReconnectAttempts <= reconnectAttemptsCount) {
                     this.logger.error('Reached max reconnect attempts limit, giving up on Redis connection...')
-                    return null // stop retrying
-                }
-
-                if (reconnectAttemptsCount === autoReconnectStrategy.maxReconnectAttemptsBeforeReadinessFailure) {
                     this.publishEventBusNotReadyEvent()
-                    // continue retrying
+                    return null // stop retrying
                 }
 
                 // return the delay in milliseconds till next retry attempt
