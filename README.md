@@ -19,7 +19,7 @@ For that reason, Webhook Relay Server has a built-in support for Redis as a mess
 
 ## Deploying Webhook Relay
 
-`webhook-relay-server`:
+In your DMZ cluster, apply the server manifests (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md) to see all the possible options that can be passed to the server using environment variables):
 
 ```yaml
 apiVersion: v1
@@ -83,7 +83,7 @@ spec:
 
 ```
 
-`webhook-relay-client`:
+In your runtime clusters, apply the client manifest (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md) to see all the possible options that can be passed to the client using environment variables):
 
 ```yaml
 apiVersion: apps/v1
