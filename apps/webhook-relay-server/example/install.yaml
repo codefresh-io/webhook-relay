@@ -11,15 +11,15 @@ spec:
                 name: webhook-relay-server-svc
                 port:
                   number: 3000
-            path: /subscribe/
-            pathType: ImplementationSpecific
+            path: /subscribe
+            pathType: Prefix
           - backend:
               service:
                 name: webhook-relay-server-svc
                 port:
                   number: 3000
-            path: /webhooks/
-            pathType: ImplementationSpecific
+            path: /webhooks
+            pathType: Prefix
 ---
 apiVersion: v1
 kind: Service
@@ -56,8 +56,6 @@ spec:
          env:
            - name: REDIS_URL
              value: redis://redis-master:6379
-           - name: SERVER_MAX_PAYLOAD_LIMIT
-             value: 3mb
          readinessProbe:
            httpGet:
              path: /ready
