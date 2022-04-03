@@ -25,3 +25,4 @@ echo "Target Version: ${TARGET_VERSION}"
 export PACKAGE_VERSION=$(if [  -f VERSION ]; then cat VERSION; else yq -r ".version" service.yaml; fi;)
 echo "Package Version: ${PACKAGE_VERSION}"
 semver-cli greater ${PACKAGE_VERSION} ${TARGET_VERSION}
+
