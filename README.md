@@ -9,7 +9,7 @@ When creating the webhook in your git provider, you need to make sure that the w
 Webhook Relay works with two components: the `webhook-relay-server` and the `webhook-relay-client`. They talk to each other via [Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html), a type of connection that allows for messages to be sent from a source to any clients listening.
 
 This means that channels are just an abstraction - all the server does is forwarding payloads to any _actively connected clients_.
-
+ 
 
 ### Running multiple instances of Webhook Relay Server
 
