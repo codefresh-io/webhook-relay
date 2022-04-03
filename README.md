@@ -128,3 +128,4 @@ spec:
 * Note that channels are _not authenticated_, therefore it is recommended to whitelist the ip range of your runtime clusters for accessing `/subscribe/:channel/` endpoint, and also whitelist the ip range of your git provider for accessing `/webhooks/:channel/*` endpoint.
 * It is recommended to run multiple replicas of the server together with Redis using the `REDIS_URL` environment variable.
 * Server Sent Events connections are HTTP long-running (keep-alive) connections, so it is recommended that you'll make sure you have an appropriate configuration for your reverse-proxy server (e.g. [Nginx](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)) to avoid situations where a long-running connection is being cut off by the reverse-proxy.  
+ 
