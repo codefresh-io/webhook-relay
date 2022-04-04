@@ -5,7 +5,7 @@
   "author": "Daniel Soifer <daniel.soifer@codefresh.io> (https://github.com/daniel-codefresh)",
   "private": true,
   "engines": {
-    "node": "16.14.0"
+    "node": "16.14.2"
   },
   "workspaces": [
     "apps/*",

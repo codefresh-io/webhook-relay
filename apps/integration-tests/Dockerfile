@@ -1,4 +1,4 @@
-FROM node:16.14.0-alpine as base
+FROM node:16.14.2-alpine as base
 WORKDIR /code
 COPY lerna.json .
 COPY tsconfig.json .
