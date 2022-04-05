@@ -78,14 +78,14 @@ export abstract class BaseEventBus implements EventBus {
     }
 
     /**
-     * Start EventBus and connect to Redis (if Redis enabled)
+     * Start EventBus
      * @param {Function} onReady - callback that is called when the EventBus is marked as ready
      * @param {Function} onNotReady - callback that is called when the EventBus is marked as not ready
      */
     abstract start(onReady?: (isFirstTime: boolean) => void, onNotReady?: () => void): Promise<void>
 
     /**
-     * Close EventBus and disconnect from Redis gracefully (if Redis enabled)
+     * Close EventBus
      */
     abstract close(): void
 

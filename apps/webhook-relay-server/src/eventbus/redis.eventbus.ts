@@ -26,7 +26,7 @@ export class RedisEventBus extends BaseEventBus {
     }
 
     /**
-     * Start EventBus and connect to Redis (if Redis enabled)
+     * Start EventBus and connect to Redis
      * @param {Function} onReady - callback that is called when the EventBus is marked as ready
      * @param {Function} onNotReady - callback that is called when the EventBus is marked as not ready
      */
@@ -44,7 +44,7 @@ export class RedisEventBus extends BaseEventBus {
     }
 
     /**
-     * Close EventBus and disconnect from Redis gracefully (if Redis enabled)
+     * Close EventBus and disconnect from Redis gracefully
      */
     close(): void {
         this.sub.disconnect()
@@ -56,10 +56,10 @@ export class RedisEventBus extends BaseEventBus {
     /**
      * Publish an event to all the subscribers
      * @param {string} channel - Channel name
-     * @param {any} payload - Event payload
+     * @param {any} event - Event payload
      */
-    async publish(channel: string, payload: any): Promise<void> {
-        const message = JSON.stringify({ channel, payload })
+    async publish(channel: string, event: any): Promise<void> {
+        const message = JSON.stringify({ channel, event })
         await this.pub.publish(REDIS_NAMESPACE, message)
     }
 
@@ -103,8 +103,8 @@ export class RedisEventBus extends BaseEventBus {
         // When we get a message, parse it and
         // throw it over to the EventEmitter.
         this.sub.on('message', (_, message) => {
-            const { channel, payload } = JSON.parse(message)
-            this.emitter.emit(channel, payload)
+            const { channel, event } = JSON.parse(message)
+            this.emitter.emit(channel, event)
         })
 
         this.sub.on('error', (err) => {

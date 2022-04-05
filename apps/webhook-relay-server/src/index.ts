@@ -2,8 +2,8 @@ import { createLightship } from 'lightship'
 import { Logger } from '@codefresh-io/logger'
 import { registerUncaughtErrorsHandler } from '@codefresh-io/common'
 
-import { Server } from './server'
 import { config } from './config'
+import { Server } from './server'
 import { createEventBus } from './eventbus'
 
 async function main(): Promise<void> {
@@ -14,23 +14,26 @@ async function main(): Promise<void> {
 
     await eventbus.start(
         (isFirstTime: boolean) => {
+            logger.info(`EventBus is ready`)
+
             if (!isFirstTime) {
                 healthService.signalReady()
+                return
             }
-            logger.info(`EventBus is ready`)
+
+            server.start(
+                () => {
+                    logger.info(`Server is listening on port ${config.server.port}.`)
+                    healthService.signalReady()
+                },
+                (err) => {
+                    logger.error('Server error:', err)
+                    healthService.shutdown()
+                }
+            )
         },
         () => {
             logger.error(`EventBus is not ready`)
-            healthService.shutdown()
-        }
-    )
-    server.start(
-        () => {
-            healthService.signalReady()
-            logger.info(`Server is listening on port ${config.server.port}.`)
-        },
-        (err) => {
-            logger.error(err)
             healthService.shutdown()
         }
     )

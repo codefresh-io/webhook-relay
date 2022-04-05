@@ -62,7 +62,7 @@ export class Server {
     async close(): Promise<void> {
         // Stop accepting new connections and close all keep-alive connections
         await this.terminator.terminate()
-        // Wait for all active requests to finish
+        // Wait for another short grace period for all active requests to finish
         await delay(2 * 1000)
 
         this.logger.info('Server closed.')
