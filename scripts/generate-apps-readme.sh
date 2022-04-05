@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
-# set -o pipefail
+set -o pipefail
 
 find "$PWD/apps" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while IFS= read -r APP ; do
 
