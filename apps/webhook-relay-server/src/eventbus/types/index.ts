@@ -34,7 +34,7 @@ export interface EventBus {
     /**
      * Publish an event to all the subscribers
      * @param {string} channel - Channel name
-     * @param {any} payload - Event payload
+     * @param {any} event - Event payload
      */
-    publish(channel: string, payload: any): Promise<void>
+    publish(channel: string, event: any): Promise<void>
 }

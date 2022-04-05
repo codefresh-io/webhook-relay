@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { LoggerService } from '@codefresh-io/logger'
-import { Interval } from '@codefresh-io/common'
+import { Interval, WebhookPayloadEvent } from '@codefresh-io/common'
 
 import { EventBus } from '../../eventbus'
 import { HttpStatus } from '../types'
@@ -14,10 +14,10 @@ export class AppController {
 
     async subscribeClientToChannel(req: Request, res: Response): Promise<void> {
         const { channel } = req.params
-        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, this.options.heartbeatInterval)
+        const { heartbeatInterval } = this.options
+        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, 500)//heartbeatInterval)
         const send = (eventData: Record<string, any>): void => {
             res.pushEvent(eventData)
-            keepAliveInterval.reset()
         }
         const close = (): void => {
             this.eventbus.unsubscribe(channel, send)
@@ -35,14 +35,14 @@ export class AppController {
         res.on('close', close)
 
         // Let the Client know that the server is ready to send events
-        res.pushReadyEvent()
+        res.pushReadyEvent({ heartbeatInterval })
 
         this.logger.info(`Client connected to SSE on channel "${channel}" with ${this.eventbus.subscribersCount(channel)} subscribers.`)
     }
 
     async publishEventOnChannel(req: Request, res: Response): Promise<void> {
         const { channel } = req.params
-        const payload = {
+        const payload: WebhookPayloadEvent = {
             headers: req.headers,
             originalUrl: req.originalUrl,
             path: req.path,

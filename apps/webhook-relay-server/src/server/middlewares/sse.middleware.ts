@@ -24,8 +24,8 @@ export function sse(req: Request, res: Response, next: NextFunction): void {
         res.pushEvent({}, 'heartbeat')
     }
 
-    res.pushReadyEvent = (): void => {
-        res.pushEvent({}, 'ready')
+    res.pushReadyEvent = (readyEventData): void => {
+        res.pushEvent(readyEventData, 'ready')
     }
 
     next()

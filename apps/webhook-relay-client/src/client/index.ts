@@ -1,7 +1,7 @@
 import EventSource from 'eventsource'
-import axios from 'axios'
+import axios, { AxiosRequestHeaders } from 'axios'
 import { LoggerService } from '@codefresh-io/logger'
-import { Timer } from '@codefresh-io/common'
+import { Timer, ConnectionReadyEvent, WebhookPayloadEvent } from '@codefresh-io/common'
 
 import { join } from 'path'
 import { ClientConfig } from '../config'
@@ -11,12 +11,12 @@ export class Client {
     private readonly sourceUrl: string
     private readonly targetBaseUrl: string
     private readonly logger: LoggerService
-    private readonly serverHeartbeatTimer: Timer
     private readonly reconnectInterval: number
+    private serverHeartbeatTimer: Timer | undefined
     private events: EventSource
 
     constructor(
-        { sourceUrl, targetBaseUrl, serverHeartbeatTimeout, reconnectInterval }: ClientConfig,
+        { sourceUrl, targetBaseUrl, reconnectInterval }: ClientConfig,
         logger: LoggerService
     ) {
         if (!isValidUrl(sourceUrl)) {
@@ -27,40 +27,27 @@ export class Client {
             throw new Error(`The provided target URL is invalid: ${targetBaseUrl}`)
         }
 
-        if (serverHeartbeatTimeout <= reconnectInterval) {
-            throw new Error(`serverHeartbeatTimeout (${serverHeartbeatTimeout}) must be larger than reconnectInterval (${reconnectInterval})`)
-        }
-
         this.sourceUrl = sourceUrl
         this.targetBaseUrl = targetBaseUrl
         this.reconnectInterval = reconnectInterval
         this.logger = logger
-
-        // serverHeartbeatTimer handler will try to recover the connection to the server in case no message
-        // is sent from the server for `serverHeartbeatTimeout` milliseconds
-        this.serverHeartbeatTimer = new Timer(() => {
-            this.logger.warn('Client did not receive an heartbeat from the server, trying to recover the connection...')
-            this.recover()
-        }, serverHeartbeatTimeout)
     }
 
     start(): void {
         this.events = new EventSource(this.sourceUrl)
         this.setReconnectInterval()
 
-        // Register event handlers
-        this.on('message', this.handleMessageEvent.bind(this))
-        this.on('open', this.handleConnectionOpenEvent.bind(this))
-        this.on('error', this.handleConnectionErrorEvent.bind(this))
-        this.on('heartbeat', () => {}) // no-op just to make sure serverHeartbeatTimer is being reset
-
         this.logger.info(`Subscribing to ${this.sourceUrl}  ...`)
 
-        this.serverHeartbeatTimer.start()
+        // Register event handlers
+        this.on('ready', this.handleConnectionReadyEvent.bind(this))
+        this.on('error', this.handleConnectionErrorEvent.bind(this))
+        this.on('message', this.handleMessageEvent.bind(this))
+        this.on('heartbeat', this.handleHeartbeatEvent.bind(this))
     }
 
     close(): void {
-        this.serverHeartbeatTimer.stop()
+        this.serverHeartbeatTimer?.stop()
         this.events.close()
         this.logger.info('Connection closed:', this.sourceUrl)
     }
@@ -75,33 +62,64 @@ export class Client {
         (this.events as any).reconnectInterval = this.reconnectInterval
     }
 
-    private on(eventType: string, handler: (event: MessageEvent<any>) => void): void {
-        this.events.addEventListener(eventType, (event) => {
-            this.serverHeartbeatTimer.reset()
-            handler(event)
+    private setServerHeartbeatTimer(heartbeatInterval: number): void {
+        // The `serverHeartbeatTimeout` has additional grace period on top
+        // of the `heartbeatInterval` that is sent by the server
+        const serverHeartbeatTimeout = heartbeatInterval + 1 * 1000
+
+        // serverHeartbeatTimer handler will try to recover the connection to the server in case no heartbeat
+        // is sent from the server for `serverHeartbeatTimeout` milliseconds
+        this.serverHeartbeatTimer = new Timer(() => {
+            this.logger.warn('Client did not receive an heartbeat from the server, trying to recover the connection...')
+            this.recover()
+        }, serverHeartbeatTimeout)
+
+        this.serverHeartbeatTimer.start()
+    }
+
+    private on<EventData = any>(
+        eventType: string,
+        handler: (event: EventData) => void | Promise<void>
+    ): void {
+        this.events.addEventListener(eventType, async (event) => {
+            const eventData: EventData = event.data ? JSON.parse(event.data) : event
+            await handler(eventData)
         })
     }
 
-    private async handleMessageEvent(msg: MessageEvent<any>): Promise<void> {
-        const data = JSON.parse(msg.data)
+    private handleHeartbeatEvent(): void {
+        this.serverHeartbeatTimer?.reset()
+    }
+
+    private async handleMessageEvent(eventData: WebhookPayloadEvent): Promise<void> {
         const target = new URL(this.targetBaseUrl)
-        target.pathname = join(target.pathname, data.path)
-        target.search = new URLSearchParams(data.query).toString()
-        delete data.headers.host
+        target.pathname = join(target.pathname, eventData.path)
+        target.search = new URLSearchParams(eventData.query).toString()
+        delete eventData.headers.host
 
         try {
-            const res = await axios.post(target.toString(), data.body, { headers: data.headers, timeout: 30 * 1000 })
+            const res = await axios.post(target.toString(), eventData.body, {
+                headers: eventData.headers as AxiosRequestHeaders,
+                timeout: 30 * 1000,
+            })
             this.logger.info(`${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`)
         } catch (err) {
             this.logger.error(`Failed to proxy request to ${target}`, err)
         }
     }
 
-    private handleConnectionOpenEvent(): void {
+    private handleConnectionReadyEvent(readyEventData: ConnectionReadyEvent): void {
         this.logger.info(`Connected: ${this.events.url} . Forwarding to ${this.targetBaseUrl}`)
+
+        this.setServerHeartbeatTimer(readyEventData.heartbeatInterval)
     }
 
-    private handleConnectionErrorEvent(err: MessageEvent<any>): void {
+    private handleConnectionErrorEvent(err: any): void {
         this.logger.error('Connection error:', err)
+
+        // When connection error events occur, the server cannot send a heartbeat so the timer needs to be stopped.
+        // At this point, the auto-reconnect mechanism of EventSource kicks in so there's no need to time out the connection.
+        // If the connection is re-established, the timer will start ticking again.
+        this.serverHeartbeatTimer?.stop()
     }
 }
