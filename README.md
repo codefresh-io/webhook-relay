@@ -45,7 +45,7 @@ spec:
   replicas: 3
   template:
     metadata:
-      labels:
+      labels: 
         app: webhook-relay-server
     spec:
       containers:
