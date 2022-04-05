@@ -20,13 +20,6 @@ export interface ClientConfig {
     // Environment variable: RECONNECT_INTERVAL.
     // Default: 1000.
     reconnectInterval: number
-
-    // Time in milliseconds that the Client should wait for Server heartbeat before trying to recover the connection.
-    // Environment variable: SERVER_HEARTBEAT_TIMEOUT.
-    // Default: 10,000.
-    // IMPORTANT: this value must be greater than `reconnectInterval` in the Client config and
-    // also greater than the heartbeat interval in the Server config.
-    serverHeartbeatTimeout: number
 }
 ```
 
