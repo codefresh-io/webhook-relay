@@ -15,7 +15,4 @@ export interface ClientConfig {
     // Environment variable: RECONNECT_INTERVAL.
     // Default: 1000.
     reconnectInterval: number
-    
-    // okokokokok
-    shimon: number
 }
