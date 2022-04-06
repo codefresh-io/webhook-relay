@@ -10,7 +10,7 @@ Webhook Relay works with two components: the `webhook-relay-server` and the `web
 
 This means that channels are just an abstraction - all the server does is forwarding payloads to any _actively connected clients_.
  
-
+ 
 ### Running multiple instances of Webhook Relay Server
 
 If you need to run multiple instances of the server, you need a way to share events across those instances. A client may be connected to instance A, so if a relevant event is sent to instance B, instance A needs to know about it too.
