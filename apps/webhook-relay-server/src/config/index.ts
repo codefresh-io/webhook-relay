@@ -7,6 +7,7 @@ export * from './types'
 export const config: Config = {
     server: {
         port: parseNumber(process.env.SERVER_PORT, 3000),
+        forceHttps: parseBoolean(process.env.SERVER_FORCE_HTTPS, false),
         maxPayloadSizeLimit: process.env.SERVER_MAX_PAYLOAD_SIZE_LIMIT || '3mb',
         heartbeatInterval: parseNumber(process.env.SERVER_HEARTBEAT_INTERVAL, 5 * 1000),
     },

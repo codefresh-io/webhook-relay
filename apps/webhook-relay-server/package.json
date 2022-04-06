@@ -20,6 +20,8 @@
     "@codefresh-io/logger": "1.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "express-sslify": "^1.2.0",
+    "helmet": "^5.0.2",
     "http-terminator": "^3.2.0",
     "ioredis": "^4.28.5",
     "lightship": "^7.0.1",
