@@ -14,10 +14,9 @@ spec:
    spec:
      containers:
        - name: webhook-relay-client
-         image: danielcf/webhook-relay-client:test1
-         imagePullPolicy: Never
+         image: quay.io/codefresh/webhook-relay-client:1.0.9
          env:
            - name: SOURCE_URL
-             value: "https://9183-87-68-200-96.ngrok.io/webhooks/prod-cf1/"
+             value: "https://public-cluster-ingress-host/webhooks/csdp-runtime1/"
            - name: TARGET_BASE_URL
-             value: "http://172.23.0.2"
+             value: "https://private-cluster-ingress-host"
