@@ -51,7 +51,7 @@ spec:
    spec:
      containers:
        - name: webhook-relay-server
-         image: quay.io/codefresh/webhook-relay-server:1.0.8
+         image: quay.io/codefresh/webhook-relay-server:1.0.9
          ports:
            - containerPort: 3000
          env:

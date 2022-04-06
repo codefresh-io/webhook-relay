@@ -14,7 +14,7 @@ spec:
    spec:
      containers:
        - name: webhook-relay-client
-         image: quay.io/codefresh/webhook-relay-client:1.0.8
+         image: quay.io/codefresh/webhook-relay-client:1.0.9
          env:
            - name: SOURCE_URL
              value: "https://public-cluster-ingress-host/webhooks/csdp-runtime1/"
