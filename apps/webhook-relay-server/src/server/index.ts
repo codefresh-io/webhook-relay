@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
 import helmet from 'helmet'
-import sslify from 'express-sslify'
+import enforce from 'express-sslify'
 import { createHttpTerminator, HttpTerminator } from 'http-terminator'
 import { LoggerService } from '@codefresh-io/logger'
 
@@ -30,7 +30,7 @@ export class Server {
 
         if (forceHttps) {
             app.use(helmet())
-            app.use(sslify.HTTPS({ trustProtoHeader: true, trustXForwardedHostHeader: true }))
+            app.use(enforce.HTTPS({ trustProtoHeader: true, trustXForwardedHostHeader: true }))
         }
 
         app.use(cors())
