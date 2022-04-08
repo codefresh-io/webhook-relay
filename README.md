@@ -1,8 +1,8 @@
 # Webhook Relay
    
 Webhook Relay is a webhook payload delivery service - it receives webhook payloads, and sends them to listening clients which then forward them to the specified target urls.<br>
-The clients need to subscribe to a specific channel on the server (the name of the channel should equal the runtime name) - this can be done by passing `SOURCE_URL` environment variable to the client, with the following url format: `https://url-of-the-webhook-relay-server/subscribe/:channel/`.
-When creating the webhook in your git provider, you need to make sure that the webhook url is configured in the following format: `https://url-of-the-webhook-relay-server/webhooks/:channel/*`. Each payload that will be sent to `/webhooks/:channel/*` endpoint, will be published immediately to all clients that are listening to the same channel on `/subscribe/:channel/` endpoint. The clients will then forward those payloads to the url that is set with `TARGET_BASE_URL` environment variable while keeping the original url path, for instance `https://base-url-of-your-runtime-cluster/webhooks/:channel/push-github/github-push-heads`. 
+The clients need to subscribe to a specific channel on the server (the name of the channel should equal the runtime name) - this can be done by passing `SOURCE_URL` environment variable to the client, with the following url format: `https://${public-cluster-ingress-host}/subscribe/${channel}/`.
+When creating the webhook in your git provider, you need to make sure that the webhook url is configured in the following format: `https://${public-cluster-ingress-host}/webhooks/${channel}/*`. Each payload that will be sent to `/webhooks/${channel}/*` endpoint, will be published immediately to all clients that are listening to the same channel on `/subscribe/${channel}/` endpoint. The clients will then forward those payloads to the url that is set with `TARGET_BASE_URL` environment variable while keeping the original url path, for instance `https://${private-cluster-ingress-host}/webhooks/${channel}/push-github/`. 
     
 ## How it works
 
@@ -19,7 +19,9 @@ For that reason, Webhook Relay Server has a built-in support for Redis as a mess
 
 ## Deploying Webhook Relay
 
-In your DMZ cluster, apply the server manifests (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md) to see all the possible options that can be passed to the server using environment variables):
+In your public cluster, apply the Server manifests. In addition, you will need to create an Ingress for the Server service so that `/webhooks/${channel}/*` endpoint can be reached from your git provider, and `/subscribe/${channel}/` endpoint can be reached from your private runtime clusters.
+
+> To see all environment variables you can configure for the Server, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md).
 
 ```yaml
 apiVersion: v1
@@ -42,7 +44,9 @@ spec:
   selector:
     matchLabels:
       app: webhook-relay-server
-  replicas: 3
+  # It is recommended to run multiple replicas of the Server together
+  # with Redis using the REDIS_URL environment variable
+  replicas: 1
   template:
     metadata:
       labels:
@@ -50,14 +54,15 @@ spec:
     spec:
       containers:
         - name: webhook-relay-server
-          image: quay.io/codefresh/webhook-relay-server:stable
+          # To view the latest image versions, visit here: https://github.com/codefresh-io/webhook-relay/releases
+          image: quay.io/codefresh/webhook-relay-server:${version-tag}
           ports:
             - containerPort: 3000
-          env:
-            - name: REDIS_URL
-              # You can specify your connection as a redis:// URL or rediss:// URL when using TLS encryption.
-              # Username and password can also be passed via URL redis://username:authpassword@127.0.0.1:6380/4.
-              value: redis://redis.my-service.com
+#          env:
+#            - name: REDIS_URL
+#              # You can specify your connection as a redis:// URL or rediss:// URL when using TLS encryption.
+#              # Username and password can also be passed via URL redis://username:authpassword@127.0.0.1:6380/4.
+#              value: redis://redis.my-service.com
           readinessProbe:
             httpGet:
               path: /ready
@@ -83,7 +88,9 @@ spec:
 
 ```
 
-In your runtime clusters, apply the client manifest (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md) to see all the possible options that can be passed to the client using environment variables):
+In your private clusters where the CSDP runtimes are installed, apply the Client manifest. 
+
+> To see all environment variables you can configure for the Client, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md).
 
 ```yaml
 apiVersion: apps/v1
@@ -102,30 +109,31 @@ spec:
     spec:
       containers:
         - name: webhook-relay-client
-          image: quay.io/codefresh/webhook-relay-client:stable
+          # To view the latest image versions, visit here: https://github.com/codefresh-io/webhook-relay/releases
+          image: quay.io/codefresh/webhook-relay-client:${version-tag}
           env:
             - name: SOURCE_URL
               # Channel name should equal the runtime name
-              value: https://url-of-the-webhook-relay-server/subscribe/:channel
+              value: https://${public-cluster-ingress-host}/subscribe/${channel}
             - name: TARGET_BASE_URL
-              # All payloads will be sent to TARGET_BASE_URL/webhooks/:channel/*
-              value: https://base-url-of-your-runtime-cluster
+              # All payloads will be sent to TARGET_BASE_URL/webhooks/${channel}/*
+              value: https://${private-cluster-ingress-host}
 
 ```
 
 ## Q&A
 
-**How long do channels live for?**
+**What is the TTL for channels?**
 
-* Channels are always active - once a client is connected, the server will send any payloads it gets at `/webhooks/:channel/*` to those clients.
+* Channels are always active - once a client is connected, the server will send any payloads it gets at `/webhooks/${channel}/*` to those clients.
 
-**Are payloads ever stored?**
+**Are payloads stored anywhere?**
 
 * Webhook payloads are never stored on the server, or in any database; the server is simply a pass-through.
 
-**Best practices for production use?**
+**What are the best practices for production use?**
 
-* Note that channels are _not authenticated_, therefore it is recommended to whitelist the ip range of your runtime clusters for accessing `/subscribe/:channel/` endpoint, and also whitelist the ip range of your git provider for accessing `/webhooks/:channel/*` endpoint.
+* Note that channels are _not authenticated_, therefore it is recommended to whitelist the ip range of your runtime clusters for accessing `/subscribe/${channel}/` endpoint, and also whitelist the ip range of your git provider for accessing `/webhooks/${channel}/*` endpoint.
 * It is recommended to run multiple replicas of the server together with Redis using the `REDIS_URL` environment variable.
 * Server Sent Events connections are HTTP long-running (keep-alive) connections, so it is recommended that you'll make sure you have an appropriate configuration for your reverse-proxy server (e.g. [Nginx](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)) to avoid situations where a long-running connection is being cut off by the reverse-proxy.  
  
