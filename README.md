@@ -19,7 +19,9 @@ For that reason, Webhook Relay Server has a built-in support for Redis as a mess
 
 ## Deploying Webhook Relay
 
-In your public cluster, apply the server manifests (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md) to see all the possible options that can be passed to the server using environment variables):
+In your public cluster, apply the Server manifests. In addition, you will need to create an Ingress for the Server service so that `/webhooks/${channel}/*` endpoint can be reached from your git provider, and `/subscribe/${channel}/` endpoint can be reached from your private runtime clusters.
+
+> To see all environment variables you can configure for the Server, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md).
 
 ```yaml
 apiVersion: v1
@@ -42,7 +44,9 @@ spec:
   selector:
     matchLabels:
       app: webhook-relay-server
-  replicas: 3
+  # It is recommended to run multiple replicas of the Server together
+  # with Redis using the REDIS_URL environment variable
+  replicas: 1
   template:
     metadata:
       labels:
@@ -51,7 +55,7 @@ spec:
       containers:
         - name: webhook-relay-server
           # To view the latest image versions, visit here: https://github.com/codefresh-io/webhook-relay/releases
-          image: quay.io/codefresh/webhook-relay-server:<version-tag>
+          image: quay.io/codefresh/webhook-relay-server:${version-tag}
           ports:
             - containerPort: 3000
 #          env:
@@ -84,7 +88,9 @@ spec:
 
 ```
 
-In your private clusters where the CSDP runtimes are installed, apply the client manifest (click [here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md) to see all the possible options that can be passed to the client using environment variables):
+In your private clusters where the CSDP runtimes are installed, apply the Client manifest. 
+
+> To see all environment variables you can configure for the Client, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md).
 
 ```yaml
 apiVersion: apps/v1
@@ -117,15 +123,15 @@ spec:
 
 ## Q&A
 
-**How long do channels live for?**
+**What is the TTL for channels?**
 
 * Channels are always active - once a client is connected, the server will send any payloads it gets at `/webhooks/${channel}/*` to those clients.
 
-**Are payloads ever stored?**
+**Are payloads stored anywhere?**
 
 * Webhook payloads are never stored on the server, or in any database; the server is simply a pass-through.
 
-**Best practices for production use?**
+**What are the best practices for production use?**
 
 * Note that channels are _not authenticated_, therefore it is recommended to whitelist the ip range of your runtime clusters for accessing `/subscribe/${channel}/` endpoint, and also whitelist the ip range of your git provider for accessing `/webhooks/${channel}/*` endpoint.
 * It is recommended to run multiple replicas of the server together with Redis using the `REDIS_URL` environment variable.
