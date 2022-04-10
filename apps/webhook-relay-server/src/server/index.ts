@@ -30,7 +30,7 @@ export class Server {
 
         if (forceHttps) {
             app.use(helmet())
-            app.use(enforce.HTTPS({ trustProtoHeader: true, trustXForwardedHostHeader: true }))
+            // app.use(enforce.HTTPS({ trustProtoHeader: true, trustXForwardedHostHeader: true }))
         }
 
         app.use(cors())
