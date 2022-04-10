@@ -3,7 +3,7 @@
 Webhook Relay is a webhook payload delivery service - it receives webhook payloads, and sends them to listening clients which then forward them to the specified target urls.<br>
 The clients need to subscribe to a specific channel on the server (the name of the channel should equal the runtime name) - this can be done by passing `SOURCE_URL` environment variable to the client, with the following url format: `https://url-of-the-webhook-relay-server/subscribe/:channel/`.
 When creating the webhook in your git provider, you need to make sure that the webhook url is configured in the following format: `https://url-of-the-webhook-relay-server/webhooks/:channel/*`. Each payload that will be sent to `/webhooks/:channel/*` endpoint, will be published immediately to all clients that are listening to the same channel on `/subscribe/:channel/` endpoint. The clients will then forward those payloads to the url that is set with `TARGET_BASE_URL` environment variable while keeping the original url path, for instance `https://base-url-of-your-runtime-cluster/webhooks/:channel/push-github/github-push-heads`. 
-        
+         
 ## How it works
    
 Webhook Relay works with two components: the `webhook-relay-server` and the `webhook-relay-client`. They talk to each other via [Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html), a type of connection that allows for messages to be sent from a source to any clients listening.
