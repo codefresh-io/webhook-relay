@@ -14,7 +14,7 @@ This means that channels are just an abstraction - all the server does is forwar
 ### Running multiple instances of Webhook Relay Server
 
 If you need to run multiple instances of the server, you need a way to share events across those instances. A client may be connected to instance A, so if a relevant event is sent to instance B, instance A needs to know about it too.
- 
+  
 For that reason, Webhook Relay Server has a built-in support for Redis as a message bus. To enable it, just pass the `REDIS_URL` environment variable to the server. That will tell the server to use Redis when receiving payloads, and to publish them to all the instances of the server.
 
 ## Deploying Webhook Relay
