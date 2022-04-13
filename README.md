@@ -1,9 +1,19 @@
 # Webhook Relay
    
-Webhook Relay is a webhook payload delivery service - it receives webhook payloads, and sends them to listening clients which then forward them to the specified target urls.<br>
-The clients need to subscribe to a specific channel on the server (the name of the channel should equal the runtime name) - this can be done by passing `SOURCE_URL` environment variable to the client, with the following url format: `https://${public-cluster-ingress-host}/subscribe/${channel}/`.
-When creating the webhook in your git provider, you need to make sure that the webhook url is configured in the following format: `https://${public-cluster-ingress-host}/webhooks/${channel}/*`. Each payload that will be sent to `/webhooks/${channel}/*` endpoint, will be published immediately to all clients that are listening to the same channel on `/subscribe/${channel}/` endpoint. The clients will then forward those payloads to the url that is set with `TARGET_BASE_URL` environment variable while keeping the original url path, for instance `https://${private-cluster-ingress-host}/webhooks/${channel}/push-github/`. 
-    
+Webhook Relay is a webhook payload delivery service - it receives webhook payloads, and sends them to listening clients which then forward them to the specified target urls.
+
+The clients need to subscribe to a specific channel on the server (the name of the channel should be identical to the runtime name). This can be done by passing `SOURCE_URL` environment variable to the client, with the following url format: `https://${external-cluster-ingress-host}/subscribe/${channel}/`.
+When creating the webhook in your git provider, you need to make sure that the webhook url is configured in the following format: `https://${external-cluster-ingress-host}/webhooks/${channel}/*`. 
+Each payload that will be sent to `/webhooks/${channel}/*` endpoint, will be published immediately to all clients that are listening to the same channel on `/subscribe/${channel}/` endpoint.
+The clients will then forward those payloads to the url that is set with `TARGET_BASE_URL` environment variable while keeping the original url path, in the format: `https://${internal-cluster-ingress-host}`. 
+
+For instance, given the following client configuration:<br>
+`SOURCE_URL = https://external-cluster/subscribe/runtime-1/` <br>
+`TARGET_BASE_URL = https://internal-cluster/` <br>
+
+the webhook URL in your git provider can be configured to `https://external-cluster/webhooks/runtime-1/push-commit/`
+so that each webhook payload that is sent to this URL will eventually be forwarded to `https://internal-cluster/webhooks/runtime-1/push-commit/`
+
 ## How it works
 
 Webhook Relay works with two components: the `webhook-relay-server` and the `webhook-relay-client`. They talk to each other via [Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html), a type of connection that allows for messages to be sent from a source to any clients listening.
@@ -19,7 +29,7 @@ For that reason, Webhook Relay Server has a built-in support for Redis as a mess
 
 ## Deploying Webhook Relay
 
-In your public cluster, apply the Server manifests. In addition, you will need to create an Ingress for the Server service so that `/webhooks/${channel}/*` endpoint can be reached from your git provider, and `/subscribe/${channel}/` endpoint can be reached from your private runtime clusters.
+In your external cluster, apply the Server manifests. In addition, you will need to create an Ingress for the Server service so that `/webhooks/${channel}/*` endpoint can be reached from your git provider, and `/subscribe/${channel}/` endpoint can be reached from your internal runtime clusters.
 
 > To see all environment variables you can configure for the Server, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-server/README.md).
 
@@ -88,7 +98,7 @@ spec:
 
 ```
 
-In your private clusters where the CSDP runtimes are installed, apply the Client manifest. 
+In your internal clusters where the CSDP runtimes are installed, apply the Client manifest. 
 
 > To see all environment variables you can configure for the Client, [click here](https://github.com/codefresh-io/webhook-relay/blob/main/apps/webhook-relay-client/README.md).
 
@@ -113,11 +123,11 @@ spec:
           image: quay.io/codefresh/webhook-relay-client:${version-tag}
           env:
             - name: SOURCE_URL
-              # Channel name should equal the runtime name
-              value: https://${public-cluster-ingress-host}/subscribe/${channel}
+              # Channel name should be identical to the runtime name
+              value: https://${external-cluster-ingress-host}/subscribe/${channel}
             - name: TARGET_BASE_URL
-              # All payloads will be sent to TARGET_BASE_URL/webhooks/${channel}/*
-              value: https://${private-cluster-ingress-host}
+              # All payloads will be sent to ${TARGET_BASE_URL}/webhooks/${channel}/*
+              value: https://${internal-cluster-ingress-host}
 
 ```
 
