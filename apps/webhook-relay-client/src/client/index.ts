@@ -40,6 +40,7 @@ export class Client {
         this.logger.info(`Subscribing to ${this.sourceUrl}  ...`)
 
         // Register event handlers
+        this.on('open', this.handleConnectionOpenEvent.bind(this))
         this.on('ready', this.handleConnectionReadyEvent.bind(this))
         this.on('error', this.handleConnectionErrorEvent.bind(this))
         this.on('message', this.handleMessageEvent.bind(this))
@@ -108,8 +109,12 @@ export class Client {
         }
     }
 
+    private handleConnectionOpenEvent(): void {
+        this.logger.info(`Connected: ${this.events.url}`)
+    }
+
     private handleConnectionReadyEvent(readyEventData: ConnectionReadyEvent): void {
-        this.logger.info(`Connected: ${this.events.url} . Forwarding to ${this.targetBaseUrl}`)
+        this.logger.info(`Server ready. Forwarding to ${this.targetBaseUrl}`)
 
         this.setServerHeartbeatTimer(readyEventData.heartbeatInterval)
     }

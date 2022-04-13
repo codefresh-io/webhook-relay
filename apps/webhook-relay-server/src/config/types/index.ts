@@ -12,6 +12,13 @@ export interface ServerConfig {
     // Default: 3000.
     port: number
 
+    // Enforce HTTPS connections on any incoming requests by automatically redirecting
+    // a non-encrypted GET HTTP request to HTTPS using a 301 permanent redirect, and by
+    // failing any other type of request (e.g. POST) with a 403 error message.
+    // Environment variable: SERVER_FORCE_HTTPS.
+    // Default: false.
+    forceHttps?: boolean
+
     // Controls the maximum request body size.
     // If this is a number, then the value specifies the number of bytes;
     // If it is a string (e.g. '100kb', '5mb'), the value will be parsed.

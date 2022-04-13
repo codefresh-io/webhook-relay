@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
+import helmet from 'helmet'
+import enforce from 'express-sslify'
 import { createHttpTerminator, HttpTerminator } from 'http-terminator'
 import { LoggerService } from '@codefresh-io/logger'
 
@@ -19,12 +21,17 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, maxPayloadSizeLimit, heartbeatInterval = 5 * 1000 }: ServerConfig,
+        { port, forceHttps, maxPayloadSizeLimit, heartbeatInterval = 5 * 1000 }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
         const controller = new AppController(eventbus, logger, { heartbeatInterval })
         const app = express()
+
+        if (forceHttps) {
+            app.use(helmet())
+            // app.use(enforce.HTTPS({ trustProtoHeader: true, trustXForwardedHostHeader: true }))
+        }
 
         app.use(cors())
         app.use(express.raw({
