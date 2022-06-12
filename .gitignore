@@ -31,3 +31,6 @@ coverage
 
 # environment variable file
 .env
+
+# turorepo
+*.turbo

@@ -12,17 +12,18 @@
     "libs/*"
   ],
   "scripts": {
-    "build": "lerna run build",
-    "test": "lerna run test",
+    "build": "turbo run build",
+    "test": "turbo run test",
     "integration": "docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --exit-code-from integration-tests --build",
     "e2e": "lerna run e2e",
-    "lint": "lerna run lint && npm run list-deps-mismacthes",
+    "lint": "turbo run lint && yarn list-deps-mismacthes",
     "list-deps-mismacthes": "syncpack list-mismatches || (echo 'Please run \"yarn fix-deps-mismacthes\" to fix this error, or create \"versionGroups\": https://www.npmjs.com/package/syncpack#versiongroups.' && exit 1)",
     "fix-deps-mismacthes": "syncpack fix-mismatches && yarn install",
     "gen-apps-readme": "sh -c ./scripts/generate-apps-readme.sh"
   },
   "devDependencies": {
     "lerna": "^4.0.0",
-    "syncpack": "^6.2.0"
+    "syncpack": "^6.2.0",
+    "turbo": "^1.2.16"
   }
 }
