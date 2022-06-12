@@ -4,6 +4,7 @@ COPY lerna.json .
 COPY tsconfig.json .
 COPY package.json .
 COPY yarn.lock .
+COPY turbo.json .
 
 FROM base as libs
 COPY --from=base /code /code
