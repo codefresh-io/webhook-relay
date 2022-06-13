@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-unicorn": "^41.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "eventsource": "^2.0.0",
+    "eventsource": "^2.0.2",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
     "supertest": "^6.2.2",
