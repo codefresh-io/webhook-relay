@@ -23,6 +23,10 @@ export interface ServerConfig {
     // Environment variable: SERVER_HEARTBEAT_INTERVAL.
     // Default: 5000.
     heartbeatInterval?: number
+
+    // Symmetric secret token that the Server will use to authenticate all incoming `subscribe` requests from the Client.
+    // Environment variable: AUTH_TOKEN.
+    authToken?: string
 }
 
 export interface HealthServiceConfig {

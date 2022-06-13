@@ -15,7 +15,7 @@ export class AppController {
     async subscribeClientToChannel(req: Request, res: Response): Promise<void> {
         const { channel } = req.params
         const { heartbeatInterval } = this.options
-        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, 500)//heartbeatInterval)
+        const keepAliveInterval = new Interval(res.pushHeartbeatEvent, heartbeatInterval)
         const send = (eventData: Record<string, any>): void => {
             res.pushEvent(eventData)
         }

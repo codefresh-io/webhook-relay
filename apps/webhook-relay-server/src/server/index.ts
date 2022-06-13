@@ -7,7 +7,7 @@ import { LoggerService } from '@codefresh-io/logger'
 import http from 'http'
 import { setTimeout as delay } from 'timers/promises'
 import { use } from './utils'
-import { errorHandler, sse } from './middlewares'
+import { errorHandler, sse, auth } from './middlewares'
 import { AppController } from './controllers'
 import { EventBus } from '../eventbus'
 import { ServerConfig } from '../config'
@@ -19,7 +19,7 @@ export class Server {
     private readonly logger: LoggerService
 
     constructor(
-        { port, maxPayloadSizeLimit, heartbeatInterval = 5 * 1000 }: ServerConfig,
+        { port, maxPayloadSizeLimit, authToken, heartbeatInterval = 5 * 1000 }: ServerConfig,
         eventbus: EventBus,
         logger: LoggerService
     ) {
@@ -35,7 +35,7 @@ export class Server {
             limit: maxPayloadSizeLimit,
         }))
 
-        app.get('/subscribe/:channel', sse, use(controller.subscribeClientToChannel.bind(controller)))
+        app.get('/subscribe/:channel', auth(authToken), sse, use(controller.subscribeClientToChannel.bind(controller)))
 
         // Don't log keep-alive (SSE) requests
         app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))

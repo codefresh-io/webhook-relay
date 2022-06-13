@@ -1,7 +1,7 @@
 import EventSource from 'eventsource'
 import axios, { AxiosRequestHeaders } from 'axios'
 import { LoggerService } from '@codefresh-io/logger'
-import { Timer, ConnectionReadyEvent, WebhookPayloadEvent } from '@codefresh-io/common'
+import { Timer, ConnectionReadyEvent, WebhookPayloadEvent, AUTH_TOKEN_HTTP_HEADER } from '@codefresh-io/common'
 
 import { join } from 'path'
 import { ClientConfig } from '../config'
@@ -12,11 +12,12 @@ export class Client {
     private readonly targetBaseUrl: string
     private readonly logger: LoggerService
     private readonly reconnectInterval: number
+    private readonly authToken?: string
     private serverHeartbeatTimer: Timer | undefined
     private events: EventSource
 
     constructor(
-        { sourceUrl, targetBaseUrl, reconnectInterval }: ClientConfig,
+        { sourceUrl, targetBaseUrl, reconnectInterval, authToken }: ClientConfig,
         logger: LoggerService
     ) {
         if (!isValidUrl(sourceUrl)) {
@@ -30,11 +31,13 @@ export class Client {
         this.sourceUrl = sourceUrl
         this.targetBaseUrl = targetBaseUrl
         this.reconnectInterval = reconnectInterval
+        this.authToken = authToken
         this.logger = logger
     }
 
     start(): void {
-        this.events = new EventSource(this.sourceUrl)
+        const esOptions = this.authToken ? { headers: { [AUTH_TOKEN_HTTP_HEADER]: this.authToken } } : undefined
+        this.events = new EventSource(this.sourceUrl, esOptions)
         this.setReconnectInterval()
 
         this.logger.info(`Subscribing to ${this.sourceUrl}  ...`)
