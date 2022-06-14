@@ -1,11 +1,11 @@
-import { Handler, NextFunction, Request, Response } from 'express'
+import { RequestHandler, NextFunction, Request, Response } from 'express'
 
 import crypto from 'crypto'
 
 export const githubPayloadSignatureHeaderName = 'X-Hub-Signature-256'
 const signatureHashAlgo = 'sha256'
 
-export function verifyGithubPayload(secret: string): Handler {
+export function verifyGithubPayload(secret: string): RequestHandler {
   return function (req: Request, res: Response, next: NextFunction): void {
     if (!req.rawBody) {
       return next('Request body empty')

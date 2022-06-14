@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response, Handler } from 'express'
+import { NextFunction, Request, Response, RequestHandler } from 'express'
 
-export const use = (handlerFn: Handler) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const use = (handlerFn: RequestHandler) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         await handlerFn(req, res, next)
     } catch (err) {
