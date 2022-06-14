@@ -7,8 +7,7 @@ export function auth(authToken?: string): RequestHandler {
     return authToken ?
         function (req: Request, res: Response, next: NextFunction): void {
             if (req.headers[AUTH_TOKEN_HTTP_HEADER] !== authToken) {
-                next(new UnauthorizedException('invalid auth token'))
-                return
+                return next(new UnauthorizedException('invalid auth token'))
             }
 
             next()
