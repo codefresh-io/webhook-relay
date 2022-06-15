@@ -26,7 +26,6 @@ export class Server {
         const controller = new AppController(eventbus, logger, { heartbeatInterval })
         const app = express()
 
-        app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))
         app.use(cors())
         app.use(express.raw({
             type: [
@@ -37,6 +36,10 @@ export class Server {
         }))
 
         app.get('/subscribe/:channel', auth(authToken), sse, use(controller.subscribeClientToChannel.bind(controller)))
+
+        // Don't log keep-alive (SSE) requests
+        app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }))
+
         app.post('/webhooks/:channel/*', use(controller.publishEventOnChannel.bind(controller)))
 
         app.use(errorHandler)

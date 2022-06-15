@@ -7,7 +7,9 @@ export function auth(authToken?: string): RequestHandler {
     return authToken ?
         function (req: Request, res: Response, next: NextFunction): void {
             if (req.headers[AUTH_TOKEN_HTTP_HEADER] !== authToken) {
-                return next(new UnauthorizedException('invalid auth token'))
+                return next(new UnauthorizedException(
+                    `invalid auth token on subscribe attempt to channel '${req.params.channel}'`
+                ))
             }
 
             next()
