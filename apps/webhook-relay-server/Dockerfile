@@ -6,31 +6,20 @@ COPY package.json .
 COPY yarn.lock .
 COPY turbo.json .
 
-FROM base as libs
-COPY --from=base /code /code
-
-COPY libs libs
-# TODO: Remove libs not used by the app
-# RUN yarn workspaces info | tail -n +2 | tail -r | tail -n +2 | tail -r | jq ".\"$APP\".workspaceDependencies | .[]" | sed 's@\@codefresh-io/@@' | xargs rm -rf
-
-FROM base as libs-packages-only
-COPY --from=libs /code/libs /code/libs
-
-# Leave only package.json files
-RUN find libs -not -name "package.json" -mindepth 2 -maxdepth 2 | xargs rm -rf
+FROM base as prune
+RUN yarn global add turbo
+COPY . .
+ARG APP
+RUN turbo prune --scope=${APP} --docker
 
 FROM base as build
-COPY --from=base /code /code
 
 # Install dependencies
-ARG APP
-COPY --from=libs-packages-only /code/libs /code/libs
-COPY apps/${APP}/package.json apps/${APP}/package.json
-RUN yarn --cwd apps/${APP} install --frozen-lockfile
+COPY --from=prune /code/out/json .
+RUN yarn install --frozen-lockfile
 
 # Build typescript
-COPY --from=libs /code/libs /code/libs
-COPY apps/${APP} apps/${APP}
+COPY --from=prune /code/out/full .
 RUN yarn build
 
 # Clean up dev dependencies
