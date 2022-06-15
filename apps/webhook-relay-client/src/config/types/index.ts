@@ -15,4 +15,8 @@ export interface ClientConfig {
     // Environment variable: RECONNECT_INTERVAL.
     // Default: 1000.
     reconnectInterval: number
+
+    // Symmetric secret token that will be sent with each request to the Server to authenticate the requests.
+    // Environment variable: AUTH_TOKEN.
+    authToken?: string
 }

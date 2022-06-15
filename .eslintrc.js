@@ -22,6 +22,7 @@ module.exports = {
     },
     ignorePatterns: ['.eslintrc.js', '*.d.ts'],
     rules: {
+        'indent': ['error', 4],
         'no-process-env': 'error',
         'unicorn/better-regex': 'error',
         'unicorn/consistent-function-scoping': 'error',

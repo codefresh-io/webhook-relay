@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "eventsource": "^2.0.0",
+    "eventsource": "^2.0.2",
     "@codefresh-io/logger": "1.0.0",
     "@codefresh-io/common": "1.0.0"
   },

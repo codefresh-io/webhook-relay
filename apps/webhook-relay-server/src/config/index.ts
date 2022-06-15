@@ -9,6 +9,7 @@ export const config: Config = {
         port: parseNumber(process.env.SERVER_PORT, 3000),
         maxPayloadSizeLimit: process.env.SERVER_MAX_PAYLOAD_SIZE_LIMIT || '3mb',
         heartbeatInterval: parseNumber(process.env.SERVER_HEARTBEAT_INTERVAL, 5 * 1000),
+        authToken: process.env.AUTH_TOKEN,
     },
     eventbus: {
         redis: {
