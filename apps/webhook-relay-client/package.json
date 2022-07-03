@@ -13,7 +13,7 @@
     "start:prod": "node dist/index.js",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --passWithNoTests --coverage"
   },
   "dependencies": {
     "axios": "^0.26.0",
