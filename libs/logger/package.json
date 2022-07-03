@@ -15,7 +15,7 @@
     "prepare": "npm run build",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --passWithNoTests --coverage"
   },
   "dependencies": {
     "winston": "^3.6.0",

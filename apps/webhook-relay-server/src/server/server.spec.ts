@@ -3,9 +3,9 @@ import EventSource from 'eventsource'
 import { LoggerService } from '@codefresh-io/logger'
 import { AUTH_TOKEN_HTTP_HEADER } from '@codefresh-io/common'
 
-import { Server } from '../src/server'
-import { createEventBus, EventBus } from '../src/eventbus'
-import { EventBusConfig, ServerConfig, config } from '../src/config'
+import { Server } from './index'
+import { createEventBus, EventBus } from '../eventbus'
+import { EventBusConfig, ServerConfig, config } from '../config'
 import http from 'http'
 
 const getNativeHttpServer = (serverWrap: Server): http.Server => {

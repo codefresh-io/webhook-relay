@@ -1,5 +1,5 @@
-import { createEventBus } from '../src/eventbus'
-import { config } from '../src/config'
+import { createEventBus } from './index'
+import { config } from '../config'
 
 /**
  * Mocks 'emit' method of private field 'emitter'
